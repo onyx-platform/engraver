@@ -1,20 +1,16 @@
 {
   "help" : "Engraver help",
-  "parent-parsers" : {
+  "shared-parsers" : {
     "cluster-name" : {
       "args" : {
-        "cluster-name" : {
-          "long" : "--cluster-name",
-          "help" : "The name of the cluster"
-        }
+        "long" : "--cluster-name",
+        "help" : "The name of the cluster"
       }
     },
     "tenancy-id" : {
       "args" : {
-        "tenancy-id" : {
-          "long" : "--tenancy-id",
-          "help" : "The :onyx/tenancy-id to deploy this application into"
-        }
+        "long" : "--tenancy-id",
+        "help" : "The :onyx/tenancy-id to deploy this application into"
       }
     }
   },
@@ -33,11 +29,11 @@
       "commands" : {
         "new" : {
           "help" : "Creates configuration management scripts for a new Onyx cluster",
-          "parent-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-name" ]
         },
         "provision" : {
           "help" : "Provisions this Onyx cluster in the target environment",
-          "parent-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-name" ]
         },
         "machines" : {
           "help" : "Creates a new set of machines in configuration management",
@@ -68,32 +64,32 @@
               }
             }
           },
-          "parent-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-name" ]
         },
         "teardown" : {
           "help" : "Destroys the provisioned infrastructure for this cluster",
-          "parent-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-name" ]
         },
         "remove" : {
           "help" : "Removes the cluster from this Engraver project",
-          "parent-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-name" ]
         }
       }
     },
     "deploy" : {
       "help" : "Deploy Onyx peer applications to a cluster",
-      "parent-parsers" : [ "cluster-name", "tenancy-id" ]
+      "shared-parsers" : [ "cluster-name", "tenancy-id" ]
     },
     "job" : {
       "help" : "Submit Onyx jobs to a cluster",
       "commands" : {
         "submit" : {
           "help" : "Submits Onyx jobs to a cluster",
-          "parent-parsers" : [ "cluster-name", "tenancy-id" ]
+          "shared-parsers" : [ "cluster-name", "tenancy-id" ]
         },
         "kill" : {
           "help" : "Kills this job on the cluster",
-          "parent-parsers" : [ "cluster-name", "tenancy-id" ]
+          "shared-parsers" : [ "cluster-name", "tenancy-id" ]
         }
       }
     }
