@@ -19,7 +19,7 @@ setup(
     author='Distributed Masonry',
     author_email='support@onyxplatform.org',
     license='Eclipse',
-    install_requires=['boto'],
+    install_requires=['boto', 'mako'],
     package_data={
         'src': ['src/args.json', 'src/ansible_template/*'],
     },

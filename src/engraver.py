@@ -3,6 +3,7 @@
 import argparse
 import json
 from pkg_resources import resource_string, resource_filename
+from mako.template import Template
 from subprocess import call
 from pprint import pprint
 
@@ -66,23 +67,26 @@ def init(arg_vars):
   call(["mkdir", "-p", (ansible_dir + "/group_vars")])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible machines directory creation." + bcolors.ENDC)
   print("")
-  
-  print(bcolors.OKBLUE + "> Creating default Ansible machine profile..." + bcolors.ENDC)
-  default_profile_file = resource_filename(__name__, "ansible_template/vars/machine_profiles/default_profile.yml")
-  call(["cp", default_profile_file, (ansible_dir + "/vars/machine_profiles/default_profile.yml")])
 
-  all_group_vars_file = resource_filename(__name__, "ansible_template/group_vars/all.yml")
-  call(["cp", all_group_vars_file, (ansible_dir + "/group_vars/all.yml")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default machine profile creation." + bcolors.ENDC)
-  print("")
-  
   print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
   engraver_playbook_file = resource_filename(__name__, "ansible_template/engraver_playbook.yml")
   call(["cp", engraver_playbook_file, (ansible_dir + "/engraver_playbook.yml")])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default playbook creation." + bcolors.ENDC)
 
-def provision_cluster(arg_vars):
-  print("Go!")
+def cluster_new(arg_vars):
+  ansible_dir = "deployments/ansible"
+
+  print(bcolors.OKBLUE + "> Creating default Ansible machine profile..." + bcolors.ENDC)
+  default_profile_file = resource_filename(__name__, "ansible_template/vars/machine_profiles/default_profile.yml")
+  call(["cp", default_profile_file, (ansible_dir + "/vars/machine_profiles/default_profile.yml")])
+
+  tpl = Template(resource_string(__name__, "ansible_template/group_vars/all.yml"))
+
+  with open((ansible_dir + "/group_vars/" + arg_vars['cluster_name'] + ".yml"), "w") as text_file:
+    text_file.write(tpl.render(cluster_name=arg_vars['cluster_name']))
+
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default machine profile creation." + bcolors.ENDC)
+  print("")
 
 def main():
   parser = argparse.ArgumentParser(description = "Manages and deploys Onyx clusters.")
@@ -97,5 +101,5 @@ def main():
   if (arg_vars.get('command-0') == 'init'):
     init(arg_vars)
   elif (arg_vars.get('command-0') == 'cluster'):
-    if (arg_vars.get('command-1') == 'provision'):
-      provision_cluster(arg_vars)
+    if (arg_vars.get('command-1') == 'new'):
+      cluster_new(arg_vars)
