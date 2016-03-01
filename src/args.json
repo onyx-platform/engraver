@@ -84,7 +84,7 @@
       "help" : "Deploy Onyx peer applications to a cluster",
       "parent-parsers" : [ "cluster-name", "tenancy-id" ]
     },
-    "jobs" : {
+    "job" : {
       "help" : "Submit Onyx jobs to a cluster",
       "commands" : {
         "submit" : {

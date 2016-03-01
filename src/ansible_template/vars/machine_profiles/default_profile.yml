@@ -3,9 +3,7 @@
 # this file, so long as the vars ec2_image_id, ec2_instance_type,
 # n_machines, and machine_services are defined.
 
-#### BEGIN DO NOT DELETE ME ####
-
-profile_id: onyx-zookeeper
+profile_id: default
 ec2_image_id: ami-d05e75b8
 ec2_instance_type: c4.large
 n_machine_instances: 3
@@ -13,5 +11,3 @@ n_machine_instances: 3
 machine_services:
   - onyx
   - zookeeper
-
-#### END DO NOT DELETE ME ####

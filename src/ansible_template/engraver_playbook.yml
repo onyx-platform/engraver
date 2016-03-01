@@ -12,8 +12,14 @@
 - hosts: localhost
   remote_user: "{{ remote_user }}"
   vars_files:
-    - /vars/machine_profiles/default_profile.yml
+    - vars/machine_profiles/default_profile.yml
   vars:
     - create_vpc: no
   roles:
     - aws
+
+- hosts: default
+  remote_user: "{{ remote_user }}"
+  vars_files:
+    - vars/machine_profiles/default_profile.yml
+  roles: "{{ machine_services }}"
