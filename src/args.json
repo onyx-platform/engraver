@@ -31,6 +31,10 @@
           "help" : "Creates configuration management scripts for a new Onyx cluster",
           "shared-parsers" : [ "cluster-name" ]
         },
+        "describe" : {
+          "help" : "Describes all clusters",
+          "shared-parsers" : [ "cluster-name" ]
+        },
         "provision" : {
           "help" : "Provisions this Onyx cluster in the target environment",
           "shared-parsers" : [ "cluster-name" ]
@@ -40,6 +44,7 @@
           "commands" : {
             "new" : {
               "help" : "Creates a new set of machines in configuration management",
+              "shared-parsers" : [ "cluster-name" ],
               "args" : {
                 "n" : {
                   "long" : "n",
@@ -48,17 +53,36 @@
                 "services" : {
                   "long" : "--services",
                   "help" : "The services this set of machines will host"
+                },
+                "profile-id" : {
+                  "long" : "--profile-id",
+                  "help" : "The ID of this machine profile"
                 }
               }
             },
             "describe" : {
-              "help" : "Describes all machine sets"
+              "help" : "Describes all machine sets",
+              "shared-parsers" : [ "cluster-name" ]
+            },
+            "scale" : {
+              "help" : "Scales this machine set up or down to a number of instances",
+              "shared-parsers" : [ "cluster-name" ],
+              "args" : {
+                "id" : {
+                  "long" : "--id",
+                  "help" : "The ID of this machine set"
+                },
+                "n" : {
+                  "long" : "n",
+                  "help" : "The desired number of machines"
+                }
+              }
             },
             "remove" : {
               "help" : "Removes this machine set",
               "args" : {
                 "id" : {
-                  "long" : "id",
+                  "long" : "--id",
                   "help" : "The ID of this machine set"
                 }
               }

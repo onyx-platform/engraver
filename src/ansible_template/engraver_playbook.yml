@@ -9,17 +9,22 @@
   roles:
     - aws
 
+% for p in profiles:
 - hosts: localhost
   remote_user: "{{ remote_user }}"
   vars_files:
-    - vars/machine_profiles/default_profile.yml
+    - vars/machine_profiles/${ p }
   vars:
     - create_vpc: no
   roles:
     - aws
 
+% endfor
+% for p in profiles:
 - hosts: default
   remote_user: "{{ remote_user }}"
   vars_files:
-    - vars/machine_profiles/default_profile.yml
+    - vars/machine_profiles/${ p }
   roles: "{{ machine_services }}"
+
+% endfor

@@ -2,9 +2,13 @@
 
 import argparse
 import json
+import yaml
 from pkg_resources import resource_string, resource_filename
 from mako.template import Template
 from subprocess import call
+from os import listdir, walk
+from os.path import isfile, join
+from prettytable import PrettyTable
 from pprint import pprint
 
 class bcolors:
@@ -40,18 +44,13 @@ def attach_subparsers(parent_parser, shared_parsers, body, level):
 
 def init(arg_vars):
   app_name = arg_vars['app-name']
-  ansible_dir = app_name + "/deployments/ansible"
+  ansible_dir = app_name + "/ansible"
 
   print(bcolors.OKBLUE + "> Invoking Leiningen and streaming its output ..." + bcolors.HEADER)
   call(["lein", "new", "onyx-app", app_name])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Leiningen." + bcolors.ENDC)
   print("")
-  
-  print(bcolors.OKBLUE + "> Initializing deployment folders ...")
-  call(["mkdir", "-p", (app_name + "/deployments")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished deployment folder initialization." + bcolors.ENDC)
-  print("")
-  
+
   print(bcolors.OKBLUE + "> Initializing .engraver folders ..." + bcolors.ENDC)
   call(["mkdir", "-p", (app_name + "/.engraver")])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished .engraver folder initialization." + bcolors.ENDC)
@@ -62,10 +61,9 @@ def init(arg_vars):
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")
   
-  print(bcolors.OKBLUE + "> Initializing Ansible machines directory..." + bcolors.ENDC)
-  call(["mkdir", "-p", (ansible_dir + "/vars/machine_profiles")])
+  print(bcolors.OKBLUE + "> Initializing Ansible vars directories..." + bcolors.ENDC)
   call(["mkdir", "-p", (ansible_dir + "/group_vars")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible machines directory creation." + bcolors.ENDC)
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible vars directory creation." + bcolors.ENDC)
   print("")
 
   print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
@@ -74,19 +72,70 @@ def init(arg_vars):
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default playbook creation." + bcolors.ENDC)
 
 def cluster_new(arg_vars):
-  ansible_dir = "deployments/ansible"
-
   print(bcolors.OKBLUE + "> Creating default Ansible machine profile..." + bcolors.ENDC)
-  default_profile_file = resource_filename(__name__, "ansible_template/vars/machine_profiles/default_profile.yml")
-  call(["cp", default_profile_file, (ansible_dir + "/vars/machine_profiles/default_profile.yml")])
+  default_profile_file = resource_filename(__name__, "ansible_template/cluster_vars/machine_profiles/default_profile.yml")
+  call(["mkdir", "-p", ("ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles")])
+  call(["cp", default_profile_file, "ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles/default_profile.yml"])
 
   tpl = Template(resource_string(__name__, "ansible_template/group_vars/all.yml"))
 
-  with open((ansible_dir + "/group_vars/" + arg_vars['cluster_name'] + ".yml"), "w") as text_file:
+  with open(("ansible/group_vars/" + arg_vars['cluster_name'] + ".yml"), "w") as text_file:
     text_file.write(tpl.render(cluster_name=arg_vars['cluster_name']))
 
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default machine profile creation." + bcolors.ENDC)
   print("")
+
+def cluster_describe(arg_vars):
+  path = "ansible/cluster_vars"
+  clusters = next(walk(path))[1]
+  t = PrettyTable(['Cluster Name'])
+  t.align = "l"
+
+  for c in clusters:
+    t.add_row([c])
+
+  print t
+
+def cluster_machines_describe(arg_vars):
+  path = "ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
+  files = [f for f in listdir(path) if isfile(join(path, f))]
+  t = PrettyTable(['Profile ID', 'N Instances', 'Services'])
+  t.align["Profile ID"] = "l"
+  t.align["Services"] = "l"
+  for f in files:
+    with open(path + "/" + f, 'r') as stream:
+      content = yaml.load(stream)
+      t.add_row([content['profile_id'], content['n_machine_instances'], ", ".join(content['machine_services'])])
+  print t
+
+def cluster_machines_new(arg_vars):
+  print(bcolors.OKBLUE + "> Creating new Ansible machine profile..." + bcolors.ENDC)
+  tpl = Template(resource_string(__name__, "ansible_template/cluster_vars/machine_profiles/profile_template.yml"))
+
+  with open(("ansible/cluster_vars/" + arg_vars['cluster_name'] +
+             "/machine_profiles/" + arg_vars['profile_id'] +
+             "_profile.yml"), "w") as text_file:
+    text_file.write(tpl.render(profile_id=arg_vars['profile_id'],
+                               n_instances=arg_vars['n'],
+                               services=[x.strip() for x in arg_vars['services'].split(",")]))
+
+  tpl = Template(resource_string(__name__, "ansible_template/engraver_playbook.yml"))
+  path = "ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
+  profile_files = [f for f in listdir(path) if isfile(join(path, f))]
+  with open(("ansible/engraver_playbook.yml"), "w") as text_file:
+    text_file.write(tpl.render(profiles=profile_files))
+
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible machine profile creation." + bcolors.ENDC)
+
+def cluster_provision(arg_vars):
+  pass
+
+fns = {("init",): init,
+       ("cluster", "new"): cluster_new,
+       ("cluster", "describe"): cluster_describe,
+       ("cluster", "provision"): cluster_provision,
+       ("cluster", "machines", "new"): cluster_machines_new,
+       ("cluster", "machines", "describe"): cluster_machines_describe}
 
 def main():
   parser = argparse.ArgumentParser(description = "Manages and deploys Onyx clusters.")
@@ -97,9 +146,7 @@ def main():
 
   args = parser.parse_args()
   arg_vars = vars(args)
+  commands = ['command-0', 'command-1', 'command-2', 'command-3']
+  command_seq = [ arg_vars.get(k) for k in commands if arg_vars.get(k) is not None ]
 
-  if (arg_vars.get('command-0') == 'init'):
-    init(arg_vars)
-  elif (arg_vars.get('command-0') == 'cluster'):
-    if (arg_vars.get('command-1') == 'new'):
-      cluster_new(arg_vars)
+  apply(fns.get(tuple(command_seq)), [arg_vars])
