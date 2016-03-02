@@ -24,6 +24,14 @@
         }
       }
     },
+    "configure" : {
+      "help" : "Configure cloud provider credentials",
+      "commands": {
+        "aws" : {
+          "help" : "Configure credentials for AWS"
+        }
+      }
+    },
     "cluster" : {
       "help" : "Manage Onyx cluster infrastructure",
       "commands" : {

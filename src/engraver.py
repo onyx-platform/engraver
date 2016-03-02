@@ -3,6 +3,7 @@
 import argparse
 import json
 import yaml
+import ConfigParser
 from pkg_resources import resource_string, resource_filename
 from mako.template import Template
 from subprocess import call
@@ -130,7 +131,20 @@ def cluster_machines_new(arg_vars):
 def cluster_provision(arg_vars):
   pass
 
+def configure_aws(arg_vars):
+  aws_key_name = raw_input("AWS SSH key name: ")
+  pem_file_path = raw_input("AWS SSH .pem file location: ")
+
+  config = ConfigParser.ConfigParser()
+  config.add_section('aws')
+  config.set('aws', 'aws_key_name', aws_key_name)
+  config.set('aws', 'pem_file_name', pem_file_path)
+
+  with open((".engraver_profile"), "w") as text_file:
+    config.write(text_file)
+
 fns = {("init",): init,
+       ("configure", "aws"): configure_aws,
        ("cluster", "new"): cluster_new,
        ("cluster", "describe"): cluster_describe,
        ("cluster", "provision"): cluster_provision,
