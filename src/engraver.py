@@ -2,25 +2,14 @@
 
 import argparse
 import json
-import yaml
-import ConfigParser
-from pkg_resources import resource_string, resource_filename
-from mako.template import Template
-from subprocess import call
-from os import listdir, walk
-from os.path import isfile, join
-from prettytable import PrettyTable
-from pprint import pprint
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+import init_command
+import cluster_command
+import configure_command
+
+from pkg_resources import resource_string
+from os import listdir, walk, getcwd
+from os.path import dirname
 
 def build_shared_parsers(body):
   parsers = {}
@@ -43,113 +32,25 @@ def attach_subparsers(parent_parser, shared_parsers, body, level):
 
       attach_subparsers(csp, shared_parsers, sub_body, (level + 1))
 
-def init(arg_vars):
-  app_name = arg_vars['app-name']
-  ansible_dir = app_name + "/ansible"
+fns = {("init",): init_command.init,
+       ("configure", "aws"): configure_command.configure_aws,
+       ("cluster", "new"): cluster_command.cluster_new,
+       ("cluster", "describe"): cluster_command.cluster_describe,
+       ("cluster", "provision"): cluster_command.cluster_provision,
+       ("cluster", "machines", "new"): cluster_command.cluster_machines_new,
+       ("cluster", "machines", "describe"): cluster_command.cluster_machines_describe}
 
-  print(bcolors.OKBLUE + "> Invoking Leiningen and streaming its output ..." + bcolors.HEADER)
-  call(["lein", "new", "onyx-app", app_name])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Leiningen." + bcolors.ENDC)
-  print("")
-
-  print(bcolors.OKBLUE + "> Initializing .engraver folders ..." + bcolors.ENDC)
-  call(["mkdir", "-p", (app_name + "/.engraver")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished .engraver folder initialization." + bcolors.ENDC)
-  print("")
-  
-  print(bcolors.OKBLUE + "> Cloning Ansible playbook from Git. Streaming Git output ..." + bcolors.HEADER)
-  call(["git", "clone", "git@github.com:MichaelDrogalis/engraver-ansible.git", ansible_dir])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
-  print("")
-  
-  print(bcolors.OKBLUE + "> Initializing Ansible vars directories..." + bcolors.ENDC)
-  call(["mkdir", "-p", (ansible_dir + "/group_vars")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible vars directory creation." + bcolors.ENDC)
-  print("")
-
-  print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
-  engraver_playbook_file = resource_filename(__name__, "ansible_template/engraver_playbook.yml")
-  call(["cp", engraver_playbook_file, (ansible_dir + "/engraver_playbook.yml")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default playbook creation." + bcolors.ENDC)
-
-def cluster_new(arg_vars):
-  print(bcolors.OKBLUE + "> Creating default Ansible machine profile..." + bcolors.ENDC)
-  default_profile_file = resource_filename(__name__, "ansible_template/cluster_vars/machine_profiles/default_profile.yml")
-  call(["mkdir", "-p", ("ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles")])
-  call(["cp", default_profile_file, "ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles/default_profile.yml"])
-
-  tpl = Template(resource_string(__name__, "ansible_template/group_vars/all.yml"))
-
-  with open(("ansible/group_vars/" + arg_vars['cluster_name'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(cluster_name=arg_vars['cluster_name']))
-
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default machine profile creation." + bcolors.ENDC)
-  print("")
-
-def cluster_describe(arg_vars):
-  path = "ansible/cluster_vars"
-  clusters = next(walk(path))[1]
-  t = PrettyTable(['Cluster Name'])
-  t.align = "l"
-
-  for c in clusters:
-    t.add_row([c])
-
-  print t
-
-def cluster_machines_describe(arg_vars):
-  path = "ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
-  files = [f for f in listdir(path) if isfile(join(path, f))]
-  t = PrettyTable(['Profile ID', 'N Instances', 'Services'])
-  t.align["Profile ID"] = "l"
-  t.align["Services"] = "l"
-  for f in files:
-    with open(path + "/" + f, 'r') as stream:
-      content = yaml.load(stream)
-      t.add_row([content['profile_id'], content['n_machine_instances'], ", ".join(content['machine_services'])])
-  print t
-
-def cluster_machines_new(arg_vars):
-  print(bcolors.OKBLUE + "> Creating new Ansible machine profile..." + bcolors.ENDC)
-  tpl = Template(resource_string(__name__, "ansible_template/cluster_vars/machine_profiles/profile_template.yml"))
-
-  with open(("ansible/cluster_vars/" + arg_vars['cluster_name'] +
-             "/machine_profiles/" + arg_vars['profile_id'] +
-             "_profile.yml"), "w") as text_file:
-    text_file.write(tpl.render(profile_id=arg_vars['profile_id'],
-                               n_instances=arg_vars['n'],
-                               services=[x.strip() for x in arg_vars['services'].split(",")]))
-
-  tpl = Template(resource_string(__name__, "ansible_template/engraver_playbook.yml"))
-  path = "ansible/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
-  profile_files = [f for f in listdir(path) if isfile(join(path, f))]
-  with open(("ansible/engraver_playbook.yml"), "w") as text_file:
-    text_file.write(tpl.render(profiles=profile_files))
-
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible machine profile creation." + bcolors.ENDC)
-
-def cluster_provision(arg_vars):
-  pass
-
-def configure_aws(arg_vars):
-  aws_key_name = raw_input("AWS SSH key name: ")
-  pem_file_path = raw_input("AWS SSH .pem file location: ")
-
-  config = ConfigParser.ConfigParser()
-  config.add_section('aws')
-  config.set('aws', 'aws_key_name', aws_key_name)
-  config.set('aws', 'pem_file_name', pem_file_path)
-
-  with open((".engraver_profile"), "w") as text_file:
-    config.write(text_file)
-
-fns = {("init",): init,
-       ("configure", "aws"): configure_aws,
-       ("cluster", "new"): cluster_new,
-       ("cluster", "describe"): cluster_describe,
-       ("cluster", "provision"): cluster_provision,
-       ("cluster", "machines", "new"): cluster_machines_new,
-       ("cluster", "machines", "describe"): cluster_machines_describe}
+def engraver_root_dir(current_dir):
+  if (current_dir == "/"):
+    if ".engraver" in listdir(current_dir):
+      return [True, current_dir]
+    else:
+      return [False, "fatal: Not an Engraver project (or any of the parent directories): .engraver"]
+  else:
+    if ".engraver" in listdir(current_dir):
+      return [True, current_dir]
+    else:
+      return engraver_root_dir(dirname(current_dir))
 
 def main():
   parser = argparse.ArgumentParser(description = "Manages and deploys Onyx clusters.")
@@ -163,4 +64,9 @@ def main():
   commands = ['command-0', 'command-1', 'command-2', 'command-3']
   command_seq = [ arg_vars.get(k) for k in commands if arg_vars.get(k) is not None ]
 
-  apply(fns.get(tuple(command_seq)), [arg_vars])
+  [success, rets] = engraver_root_dir(getcwd())
+  if (arg_vars.get('command-0') in ['init', 'configure']) or success:
+    project_root = rets
+    apply(fns.get(tuple(command_seq)), [arg_vars, project_root])
+  else:
+    print rets
