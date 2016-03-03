@@ -5,9 +5,8 @@
 
 profile_id: default
 ec2_image_id: ami-d05e75b8
-ec2_instance_type: c4.large
-n_machine_instances: 3
+ec2_instance_type: t2.micro
+n_machine_instances: 1
 
 machine_services:
-  - onyx
   - zookeeper

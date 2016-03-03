@@ -26,11 +26,6 @@ def init(arg_vars, project_root):
   
   print(bcolors.OKBLUE + "> Initializing Ansible vars directories..." + bcolors.ENDC)
   call(["mkdir", "-p", (ansible_dir + "/group_vars")])
-  call(["mkdir", "-p", (ansible_dir + "/cluster_vars")])
+  call(["mkdir", "-p", (ansible_dir + "/vars/cluster")])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible vars directory creation." + bcolors.ENDC)
   print("")
-
-  print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
-  engraver_playbook_file = resource_filename(__name__, "ansible_template/engraver_aws.yml")
-  call(["cp", engraver_playbook_file, (ansible_dir + "/engraver_aws.yml")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible default playbook creation." + bcolors.ENDC)

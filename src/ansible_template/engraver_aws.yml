@@ -4,6 +4,8 @@
 
 - hosts: localhost
   remote_user: "{{ remote_user }}"
+  vars_files:
+    - "group_vars/{{ cluster_name }}.yml"
   vars:
     - create_vpc: yes
   roles:
@@ -13,6 +15,7 @@
 - hosts: localhost
   remote_user: "{{ remote_user }}"
   vars_files:
+    - "group_vars/{{ cluster_name }}.yml"
     - vars/machine_profiles/${ p }
   vars:
     - create_vpc: no
@@ -24,6 +27,7 @@
 - hosts: default
   remote_user: "{{ remote_user }}"
   vars_files:
+    - "group_vars/{{ cluster_name }}.yml"
     - vars/machine_profiles/${ p }
   roles: "{{ machine_services }}"
 
