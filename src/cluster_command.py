@@ -15,8 +15,15 @@ def refresh_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/engraver_aws.yml"))
   path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
+
+  profiles = {}
+  for f in profile_files:
+    with open((path + "/"  + f), "r") as handle:
+      content = yaml.load(handle)
+      profiles[content['profile_id']] = {'machine_services': content['machine_services']}
+
   with open((project_root + "/ansible/" + arg_vars['cluster_name'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(profiles=profile_files))
+    text_file.write(tpl.render(profiles=profiles))
 
 def cluster_new(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
@@ -75,17 +82,20 @@ def cluster_machines_new(arg_vars, project_root):
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible machine profile creation." + bcolors.ENDC)
 
 def cluster_provision(arg_vars, project_root):
+  print(bcolors.OKBLUE + "> Invoking Ansible and streaming its output ..." + bcolors.ENDC)
   config = ConfigParser.ConfigParser()
   engraver_profile = expanduser("~") + "/.engraver"
-  config.read('.engraver_profile')
+  config.read(engraver_profile)
 
-  aws_key_name = config['aws']['aws_key_name']
-  pem_file_path = config['aws']['pem_file_name']
+  aws_key_name = config.get('aws', 'aws_key_name', 0)
+  pem_file_path = config.get('aws', 'pem_file_name', 0)
 
-  os.chdir(project_root + "/ansible")
+  chdir(project_root + "/ansible")
 
   call(["ansible-playbook", "--private-key", pem_file_path,
         "-i", ",", "-e", "remote_user='ubuntu'",
         "-e", ("cluster_name=" + arg_vars['cluster_name']),
         "-e", ("aws_key_name=" + aws_key_name),
-        project_root + "/ansible/engraver_aws.yml"])
+        project_root + "/ansible/" + arg_vars['cluster_name'] + ".yml"])
+
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible" + bcolors.ENDC)

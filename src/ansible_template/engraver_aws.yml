@@ -16,19 +16,22 @@
   remote_user: "{{ remote_user }}"
   vars_files:
     - "group_vars/{{ cluster_name }}.yml"
-    - vars/machine_profiles/${ p }
+    - "vars/cluster_vars/{{ cluster_name }}/machine_profiles/${ p }_profile.yml"
   vars:
     - create_vpc: no
   roles:
     - aws
 
 % endfor
-% for p in profiles:
-- hosts: default
+% for p, m in profiles.iteritems():
+- hosts: ${ p }
   remote_user: "{{ remote_user }}"
   vars_files:
     - "group_vars/{{ cluster_name }}.yml"
-    - vars/machine_profiles/${ p }
-  roles: "{{ machine_services }}"
+    - "vars/cluster_vars/{{ cluster_name }}/machine_profiles/${ p }_profile.yml"
+  roles:
+% for service in m['machine_services']:
+    - ${ service }
+% endfor
 
 % endfor

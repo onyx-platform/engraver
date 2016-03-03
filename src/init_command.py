@@ -26,6 +26,6 @@ def init(arg_vars, project_root):
   
   print(bcolors.OKBLUE + "> Initializing Ansible vars directories..." + bcolors.ENDC)
   call(["mkdir", "-p", (ansible_dir + "/group_vars")])
-  call(["mkdir", "-p", (ansible_dir + "/vars/cluster")])
+  call(["mkdir", "-p", (ansible_dir + "/vars/cluster_vars")])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible vars directory creation." + bcolors.ENDC)
   print("")
