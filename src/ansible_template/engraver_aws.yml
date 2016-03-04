@@ -4,6 +4,7 @@
 
 - hosts: localhost
   remote_user: "{{ remote_user }}"
+  become_method: sudo
   vars_files:
     - "group_vars/{{ cluster_name }}.yml"
   vars:
@@ -14,6 +15,7 @@
 % for p in profiles:
 - hosts: localhost
   remote_user: "{{ remote_user }}"
+  become_method: sudo
   vars_files:
     - "group_vars/{{ cluster_name }}.yml"
     - "vars/cluster_vars/{{ cluster_name }}/machine_profiles/${ p }_profile.yml"
@@ -26,6 +28,7 @@
 % for p, m in profiles.iteritems():
 - hosts: ${ p }
   remote_user: "{{ remote_user }}"
+  become_method: sudo
   vars_files:
     - "group_vars/{{ cluster_name }}.yml"
     - "vars/cluster_vars/{{ cluster_name }}/machine_profiles/${ p }_profile.yml"
