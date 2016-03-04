@@ -32,6 +32,20 @@
         }
       }
     },
+    "service" : {
+      "help" : "Manage services that the cluster machines can install and run",
+      "commands": {
+        "new" : {
+          "help" : "Creates a new service and Ansible template role"
+        },
+        "remove" : {
+          "help" : "Removes a service"
+        },
+        "pull" : {
+          "help" : "Pulls a service from a Git repository"
+        }
+      }
+    },
     "cluster" : {
       "help" : "Manage Onyx cluster infrastructure",
       "commands" : {
