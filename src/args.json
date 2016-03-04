@@ -4,12 +4,14 @@
     "cluster-name" : {
       "args" : {
         "long" : "--cluster-name",
+        "required" : true,
         "help" : "The name of the cluster"
       }
     },
     "tenancy-id" : {
       "args" : {
         "long" : "--tenancy-id",
+        "required" : true,
         "help" : "The :onyx/tenancy-id to deploy this application into"
       }
     }
@@ -54,8 +56,7 @@
           "shared-parsers" : [ "cluster-name" ]
         },
         "describe" : {
-          "help" : "Describes all clusters",
-          "shared-parsers" : [ "cluster-name" ]
+          "help" : "Describes all clusters"
         },
         "provision" : {
           "help" : "Provisions this Onyx cluster in the target environment",
@@ -78,6 +79,7 @@
                 },
                 "profile-id" : {
                   "long" : "--profile-id",
+                  "required" : true,
                   "help" : "The ID of this machine profile"
                 }
               }
@@ -91,8 +93,9 @@
               "shared-parsers" : [ "cluster-name" ],
               "args" : {
                 "id" : {
-                  "long" : "--id",
-                  "help" : "The ID of this machine set"
+                  "long" : "--profile-id",
+                  "required" : true,
+                  "help" : "The profile ID of this machine set"
                 },
                 "n" : {
                   "long" : "n",
@@ -104,13 +107,13 @@
               "help" : "Removes this machine set",
               "args" : {
                 "id" : {
-                  "long" : "--id",
-                  "help" : "The ID of this machine set"
+                  "long" : "--profile-id",
+                  "required" : true,
+                  "help" : "The profile ID of this machine set"
                 }
               }
             }
-          },
-          "shared-parsers" : [ "cluster-name" ]
+          }
         },
         "teardown" : {
           "help" : "Destroys the provisioned infrastructure for this cluster",

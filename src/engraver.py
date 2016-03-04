@@ -11,11 +11,21 @@ from pkg_resources import resource_string
 from os import listdir, walk, getcwd
 from os.path import dirname
 
+def add_argument(parser, body):
+  long_opt = [body['long']]
+
+  opts = {}
+  opts['help'] = body['help']
+  if body.get('required'):
+     opts['required'] = True
+
+  apply(parser.add_argument, long_opt, opts)
+
 def build_shared_parsers(body):
   parsers = {}
   for switch, sub_body in body.iteritems():
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument(sub_body['args']['long'], help=sub_body['args']['help'])
+    add_argument(parser, sub_body['args'])
     parsers[switch] = parser
   return parsers
 
@@ -28,7 +38,7 @@ def attach_subparsers(parent_parser, shared_parsers, body, level):
       csp = sp.add_parser(sub_command, help=sub_body['help'], parents=my_shared_parsers)
 
       for arg, arg_sub_body in sub_body.get('args', {}).iteritems():
-        csp.add_argument(arg_sub_body['long'], help=arg_sub_body['help'])
+        add_argument(csp, arg_sub_body)
 
       attach_subparsers(csp, shared_parsers, sub_body, (level + 1))
 
