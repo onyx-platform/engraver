@@ -1,11 +1,11 @@
 {
   "help" : "Engraver help",
   "shared-parsers" : {
-    "cluster-name" : {
+    "cluster-id" : {
       "args" : {
-        "long" : "--cluster-name",
+        "long" : "--cluster-id",
         "required" : true,
-        "help" : "The name of the cluster"
+        "help" : "The id of the cluster"
       }
     },
     "tenancy-id" : {
@@ -75,21 +75,21 @@
       "commands" : {
         "new" : {
           "help" : "Creates configuration management scripts for a new Onyx cluster",
-          "shared-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-id" ]
         },
         "describe" : {
           "help" : "Describes all clusters"
         },
         "provision" : {
           "help" : "Provisions this Onyx cluster in the target environment",
-          "shared-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-id" ]
         },
         "machines" : {
           "help" : "Creates a new set of machines in configuration management",
           "commands" : {
             "new" : {
               "help" : "Creates a new set of machines in configuration management",
-              "shared-parsers" : [ "cluster-name" ],
+              "shared-parsers" : [ "cluster-id" ],
               "args" : {
                 "n" : {
                   "long" : "n",
@@ -108,19 +108,19 @@
             },
             "describe" : {
               "help" : "Describes all machine sets",
-              "shared-parsers" : [ "cluster-name" ]
+              "shared-parsers" : [ "cluster-id" ]
             },
             "list" : {
               "help" : "Lists all running machines in this cluster",
-              "shared-parsers" : [ "cluster-name" ]
+              "shared-parsers" : [ "cluster-id" ]
             },
             "cache" : {
               "help" : "Updates local cache of machines for this cluster",
-              "shared-parsers" : [ "cluster-name" ]
+              "shared-parsers" : [ "cluster-id" ]
             },
             "scale" : {
               "help" : "Scales this machine set up or down to a number of instances",
-              "shared-parsers" : [ "cluster-name" ],
+              "shared-parsers" : [ "cluster-id" ],
               "args" : {
                 "id" : {
                   "long" : "--profile-id",
@@ -147,28 +147,28 @@
         },
         "teardown" : {
           "help" : "Destroys the provisioned infrastructure for this cluster",
-          "shared-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-id" ]
         },
         "remove" : {
           "help" : "Removes the cluster from this Engraver project",
-          "shared-parsers" : [ "cluster-name" ]
+          "shared-parsers" : [ "cluster-id" ]
         }
       }
     },
     "deploy" : {
       "help" : "Deploy Onyx peer applications to a cluster",
-      "shared-parsers" : [ "cluster-name", "tenancy-id" ]
+      "shared-parsers" : [ "cluster-id", "tenancy-id" ]
     },
     "job" : {
       "help" : "Submit Onyx jobs to a cluster",
       "commands" : {
         "submit" : {
           "help" : "Submits Onyx jobs to a cluster",
-          "shared-parsers" : [ "cluster-name", "tenancy-id" ]
+          "shared-parsers" : [ "cluster-id", "tenancy-id" ]
         },
         "kill" : {
           "help" : "Kills this job on the cluster",
-          "shared-parsers" : [ "cluster-name", "tenancy-id" ]
+          "shared-parsers" : [ "cluster-id", "tenancy-id" ]
         }
       }
     }
