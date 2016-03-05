@@ -92,6 +92,10 @@
               "help" : "Lists all running machines in this cluster",
               "shared-parsers" : [ "cluster-name" ]
             },
+            "cache" : {
+              "help" : "Updates local cache of machines for this cluster",
+              "shared-parsers" : [ "cluster-name" ]
+            },
             "scale" : {
               "help" : "Scales this machine set up or down to a number of instances",
               "shared-parsers" : [ "cluster-name" ],

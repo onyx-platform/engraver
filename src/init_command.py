@@ -23,6 +23,7 @@ def init(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Creating new Ansible playbook. Streaming Ansible output ..." + bcolors.HEADER)
   call(["ansible-galaxy", "init", ansible_dir])
   call(["cp", resource_filename(__name__, "ansible_template/ansible.cfg"), ansible_dir])
+  call(["cp", resource_filename(__name__, "ansible_template/refresh_cache.yml"), ansible_dir])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Ansible." + bcolors.ENDC)
   print("")
   

@@ -66,7 +66,28 @@ def cluster_machines_describe(arg_vars, project_root):
       t.add_row([content['profile_id'], content['n_machine_instances'], ", ".join(content['machine_services'])])
   print t
 
-def cluster_machines_list(arg_vars, project_root):
+def invoke_ansible(arg_vars, project_root, playbook):
+  config = ConfigParser.ConfigParser()
+  engraver_profile = expanduser("~") + "/.engraver"
+  config.read(engraver_profile)
+
+  aws_key_name = config.get('aws', 'aws_key_name', 0)
+  pem_file_path = config.get('aws', 'pem_file_name', 0)
+
+  chdir(project_root + "/ansible")
+
+  call(["ansible-playbook", "--private-key", pem_file_path,
+        "-i", ",", "-e", "remote_user='ubuntu'",
+        "-e", ("cluster_name=" + arg_vars['cluster_name']),
+        "-e", ("aws_key_name=" + aws_key_name),
+        "-e", ("engraver_root=" + project_root),
+        project_root + "/ansible/" + playbook])
+
+
+def cluster_machines_list(arg_vars, project_root, hint=True):
+  if hint:
+    print(bcolors.OKBLUE + "> Hint: Displaying cached contents. Refresh status with: engraver cluster machines cache" + bcolors.ENDC)
+    print("")
   path = project_root + "/.engraver/clusters/" + arg_vars['cluster_name'] + ".json"
   t = PrettyTable(['', 'ID', 'Profile', 'Public DNS Name', 'Private IP'])
   t.align = "l"
@@ -75,6 +96,22 @@ def cluster_machines_list(arg_vars, project_root):
   for index, m in enumerate(machines):
     t.add_row([index + 1, m.get('id'), m.get('tags').get('Role'), m.get('public_dns_name'), m.get('private_ip_address')])
   print t
+
+def cluster_machines_cache(arg_vars, project_root):
+  print(bcolors.OKBLUE + "> Updating local cache of cluster machines. Streaming Ansible output ..." + bcolors.ENDC)
+
+  config = ConfigParser.ConfigParser()
+  engraver_profile = expanduser("~") + "/.engraver"
+  config.read(engraver_profile)
+
+  aws_key_name = config.get('aws', 'aws_key_name', 0)
+  pem_file_path = config.get('aws', 'pem_file_name', 0)
+
+  chdir(project_root + "/ansible")
+  invoke_ansible(arg_vars, project_root, "refresh_cache.yml")
+
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating local cache. Displaying cluster: " + bcolors.ENDC)
+  cluster_machines_list(arg_vars, project_root, hint=False)
 
 def cluster_machines_new(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Creating new Ansible machine profile..." + bcolors.ENDC)
@@ -94,20 +131,5 @@ def cluster_machines_new(arg_vars, project_root):
 
 def cluster_provision(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Invoking Ansible and streaming its output ..." + bcolors.ENDC)
-  config = ConfigParser.ConfigParser()
-  engraver_profile = expanduser("~") + "/.engraver"
-  config.read(engraver_profile)
-
-  aws_key_name = config.get('aws', 'aws_key_name', 0)
-  pem_file_path = config.get('aws', 'pem_file_name', 0)
-
-  chdir(project_root + "/ansible")
-
-  call(["ansible-playbook", "--private-key", pem_file_path,
-        "-i", ",", "-e", "remote_user='ubuntu'",
-        "-e", ("cluster_name=" + arg_vars['cluster_name']),
-        "-e", ("aws_key_name=" + aws_key_name),
-        "-e", ("engraver_root=" + project_root),
-        project_root + "/ansible/" + arg_vars['cluster_name'] + ".yml"])
-
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible" + bcolors.ENDC)
+  invoke_ansible(arg_vars, project_root, arg_vars['cluster_name'] + ".yml")
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
