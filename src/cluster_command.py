@@ -7,7 +7,7 @@ import ConfigParser
 from pkg_resources import resource_filename, resource_string
 from prettytable import PrettyTable
 from mako.template import Template
-from os.path import isfile, join, expanduser
+from os.path import isfile, join, expanduser, exists
 from os import listdir, walk, chdir
 from subprocess import call
 from colors import bcolors
@@ -73,13 +73,17 @@ def cluster_machines_list(arg_vars, project_root, hint=True):
     print(bcolors.OKBLUE + "> Hint: Displaying cached contents. Refresh status with: engraver cluster machines cache" + bcolors.ENDC)
     print("")
   path = project_root + "/.engraver/clusters/" + arg_vars['cluster_id'] + ".json"
-  t = PrettyTable(['', 'ID', 'Profile', 'Public DNS Name', 'Private IP'])
-  t.align = "l"
-  contents = open(path, 'r').read()
-  machines = sorted(json.loads(contents), key=lambda k: k.get('tags').get('ProfileId'))
-  for index, m in enumerate(machines):
-    t.add_row([index + 1, m.get('id'), m.get('tags').get('ProfileId'), m.get('public_dns_name'), m.get('private_ip_address')])
-  print t
+
+  if exists(path):
+    t = PrettyTable(['', 'ID', 'Profile', 'Public DNS Name', 'Private IP'])
+    t.align = "l"
+    contents = open(path, 'r').read()
+    machines = sorted(json.loads(contents), key=lambda k: k.get('tags').get('ProfileId'))
+    for index, m in enumerate(machines):
+        t.add_row([index + 1, m.get('id'), m.get('tags').get('ProfileId'), m.get('public_dns_name'), m.get('private_ip_address')])
+    print t
+  else:
+    print(bcolors.OKBLUE + "> No cached contents found." + bcolors.ENDC)
 
 def cluster_machines_cache(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Updating local cache of cluster machines. Streaming Ansible output ..." + bcolors.ENDC)
