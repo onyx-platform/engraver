@@ -6,7 +6,7 @@
   remote_user: "{{ remote_user }}"
   become_method: sudo
   vars_files:
-    - "group_vars/{{ cluster_name }}.yml"
+    - "group_vars/{{ onyx_cluster_id }}.yml"
   vars:
     - create_vpc: no
     - create_ec2: no

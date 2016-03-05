@@ -20,7 +20,7 @@ def invoke_ansible(arg_vars, project_root, playbook):
 
   call(["ansible-playbook", "--private-key", pem_file_path,
         "-i", ",", "-e", "remote_user='ubuntu'",
-        "-e", ("cluster_name=" + arg_vars['cluster_name']),
+        "-e", ("onyx_cluster_id=" + arg_vars['cluster_id']),
         "-e", ("aws_key_name=" + aws_key_name),
         "-e", ("aws_access_key=" + aws_access_key)
         "-e", ("aws_secret_key=" + aws_secret_key)

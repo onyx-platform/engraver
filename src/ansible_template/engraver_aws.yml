@@ -6,7 +6,7 @@
   remote_user: "{{ remote_user }}"
   become_method: sudo
   vars_files:
-    - "group_vars/{{ cluster_name }}.yml"
+    - "group_vars/{{ onyx_cluster_id }}.yml"
   vars:
     - create_vpc: yes
     - create_ec2: no
@@ -19,8 +19,8 @@
   remote_user: "{{ remote_user }}"
   become_method: sudo
   vars_files:
-    - "group_vars/{{ cluster_name }}.yml"
-    - "vars/cluster_vars/{{ cluster_name }}/machine_profiles/${ p }_profile.yml"
+    - "group_vars/{{ onyx_cluster_id }}.yml"
+    - "vars/cluster_vars/{{ onyx_cluster_id }}/machine_profiles/${ p }_profile.yml"
   vars:
     - create_vpc: no
     - create_ec2: yes
@@ -33,7 +33,7 @@
   remote_user: "{{ remote_user }}"
   become_method: sudo
   vars_files:
-    - "group_vars/{{ cluster_name }}.yml"
+    - "group_vars/{{ onyx_cluster_id }}.yml"
   vars:
     - create_vpc: no
     - create_ec2: no
@@ -46,8 +46,8 @@
   remote_user: "{{ remote_user }}"
   become_method: sudo
   vars_files:
-    - "group_vars/{{ cluster_name }}.yml"
-    - "vars/cluster_vars/{{ cluster_name }}/machine_profiles/${ p }_profile.yml"
+    - "group_vars/{{ onyx_cluster_id }}.yml"
+    - "vars/cluster_vars/{{ onyx_cluster_id }}/machine_profiles/${ p }_profile.yml"
   roles:
 % for service in m['machine_services']:
     - ${ service }

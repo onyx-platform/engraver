@@ -16,7 +16,7 @@ from ansible import invoke_ansible
 
 def refresh_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/engraver_aws.yml"))
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
+  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['onyx_cluster_id'] + "/machine_profiles"
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
 
   profiles = {}
@@ -25,19 +25,19 @@ def refresh_playbook(arg_vars, project_root):
       content = yaml.load(handle)
       profiles[content['profile_id']] = {'machine_services': content['machine_services']}
 
-  with open((project_root + "/ansible/" + arg_vars['cluster_name'] + ".yml"), "w") as text_file:
+  with open((project_root + "/ansible/" + arg_vars['onyx_cluster_id'] + ".yml"), "w") as text_file:
     text_file.write(tpl.render(profiles=profiles))
 
 def cluster_new(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
   default_profile_file = resource_filename(__name__, "ansible_template/vars/cluster_vars/machine_profiles/default_profile.yml")
-  call(["mkdir", "-p", (project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles")])
-  call(["cp", default_profile_file, project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles/default_profile.yml"])
+  call(["mkdir", "-p", (project_root + "/ansible/vars/cluster_vars/" + arg_vars['onyx_cluster_id'] + "/machine_profiles")])
+  call(["cp", default_profile_file, project_root + "/ansible/vars/cluster_vars/" + arg_vars['onyx_cluster_id'] + "/machine_profiles/default_profile.yml"])
 
   tpl = Template(resource_string(__name__, "ansible_template/group_vars/all.yml"))
 
-  with open((project_root + "/ansible/group_vars/" + arg_vars['cluster_name'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(cluster_name=arg_vars['cluster_name']))
+  with open((project_root + "/ansible/group_vars/" + arg_vars['onyx_cluster_id'] + ".yml"), "w") as text_file:
+    text_file.write(tpl.render(onyx_cluster_id=arg_vars['onyx_cluster_id']))
 
   refresh_playbook(arg_vars, project_root)
 
@@ -57,7 +57,7 @@ def cluster_describe(arg_vars, project_root):
   print t
 
 def cluster_machines_describe(arg_vars, project_root):
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
+  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['onyx_cluster_id'] + "/machine_profiles"
   files = [f for f in listdir(path) if isfile(join(path, f))]
   t = PrettyTable(['Profile ID', 'Desired Count', 'Services'])
   t.align["Profile ID"] = "l"
@@ -72,7 +72,7 @@ def cluster_machines_list(arg_vars, project_root, hint=True):
   if hint:
     print(bcolors.OKBLUE + "> Hint: Displaying cached contents. Refresh status with: engraver cluster machines cache" + bcolors.ENDC)
     print("")
-  path = project_root + "/.engraver/clusters/" + arg_vars['cluster_name'] + ".json"
+  path = project_root + "/.engraver/clusters/" + arg_vars['onyx_cluster_id'] + ".json"
   t = PrettyTable(['', 'ID', 'Profile', 'Public DNS Name', 'Private IP'])
   t.align = "l"
   contents = open(path, 'r').read()
@@ -98,7 +98,7 @@ def cluster_machines_cache(arg_vars, project_root):
   cluster_machines_list(arg_vars, project_root, hint=False)
 
 def cluster_machines_scale(arg_vars, project_root):
-  f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
+  f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['onyx_cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
   with open(f, "r") as stream:
     content = yaml.load(stream)
     content['n_machine_instances'] = int(arg_vars['n'])
@@ -113,7 +113,7 @@ def cluster_machines_new(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/vars/cluster_vars/machine_profiles/profile_template.yml"))
 
   with open(project_root +
-            ("/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] +
+            ("/ansible/vars/cluster_vars/" + arg_vars['onyx_cluster_id'] +
              "/machine_profiles/" + arg_vars['profile_id'] +
              "_profile.yml"), "w") as text_file:
     text_file.write(tpl.render(profile_id=arg_vars['profile_id'],
@@ -126,5 +126,5 @@ def cluster_machines_new(arg_vars, project_root):
 
 def cluster_provision(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Invoking Ansible and streaming its output ..." + bcolors.ENDC)
-  invoke_ansible(arg_vars, project_root, arg_vars['cluster_name'] + ".yml")
+  invoke_ansible(arg_vars, project_root, arg_vars['onyx_cluster_id'] + ".yml")
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
