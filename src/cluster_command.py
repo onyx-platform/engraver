@@ -96,6 +96,7 @@ def cluster_provision(arg_vars, project_root):
         "-i", ",", "-e", "remote_user='ubuntu'",
         "-e", ("cluster_name=" + arg_vars['cluster_name']),
         "-e", ("aws_key_name=" + aws_key_name),
+        "-e", ("engraver_root=" + project_root),
         project_root + "/ansible/" + arg_vars['cluster_name'] + ".yml"])
 
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible" + bcolors.ENDC)

@@ -9,6 +9,8 @@
     - "group_vars/{{ cluster_name }}.yml"
   vars:
     - create_vpc: yes
+    - create_ec2: no
+    - cache: no
   roles:
     - aws
 
@@ -21,10 +23,24 @@
     - "vars/cluster_vars/{{ cluster_name }}/machine_profiles/${ p }_profile.yml"
   vars:
     - create_vpc: no
+    - create_ec2: yes
+    - cache: no
   roles:
     - aws
 
 % endfor
+- hosts: localhost
+  remote_user: "{{ remote_user }}"
+  become_method: sudo
+  vars_files:
+    - "group_vars/{{ cluster_name }}.yml"
+  vars:
+    - create_vpc: no
+    - create_ec2: no
+    - cache: yes
+  roles:
+    - aws
+
 % for p, m in profiles.iteritems():
 - hosts: ${ p }
   remote_user: "{{ remote_user }}"
