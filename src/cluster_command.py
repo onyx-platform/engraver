@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import yaml
 import ConfigParser
 
@@ -63,6 +64,16 @@ def cluster_machines_describe(arg_vars, project_root):
     with open(path + "/" + f, 'r') as stream:
       content = yaml.load(stream)
       t.add_row([content['profile_id'], content['n_machine_instances'], ", ".join(content['machine_services'])])
+  print t
+
+def cluster_machines_list(arg_vars, project_root):
+  path = project_root + "/.engraver/clusters/" + arg_vars['cluster_name'] + ".json"
+  t = PrettyTable(['', 'ID', 'Profile', 'Public DNS Name', 'Private IP'])
+  t.align = "l"
+  contents = open(path, 'r').read()
+  machines = sorted(json.loads(contents), key=lambda k: k.get('tags').get('Role'))
+  for index, m in enumerate(machines):
+    t.add_row([index + 1, m.get('id'), m.get('tags').get('Role'), m.get('public_dns_name'), m.get('private_ip_address')])
   print t
 
 def cluster_machines_new(arg_vars, project_root):

@@ -11,6 +11,18 @@ from pkg_resources import resource_string
 from os import listdir, walk, getcwd
 from os.path import dirname
 
+def engraver_root_dir(current_dir):
+  if (current_dir == "/"):
+    if ".engraver" in listdir(current_dir):
+      return [True, current_dir]
+    else:
+      return [False, "fatal: Not an Engraver project (or any of the parent directories): .engraver"]
+  else:
+    if ".engraver" in listdir(current_dir):
+      return [True, current_dir]
+    else:
+      return engraver_root_dir(dirname(current_dir))
+
 def add_argument(parser, body):
   long_opt = [body['long']]
 
@@ -48,19 +60,8 @@ fns = {("init",): init_command.init,
        ("cluster", "describe"): cluster_command.cluster_describe,
        ("cluster", "provision"): cluster_command.cluster_provision,
        ("cluster", "machines", "new"): cluster_command.cluster_machines_new,
+       ("cluster", "machines", "list"): cluster_command.cluster_machines_list,
        ("cluster", "machines", "describe"): cluster_command.cluster_machines_describe}
-
-def engraver_root_dir(current_dir):
-  if (current_dir == "/"):
-    if ".engraver" in listdir(current_dir):
-      return [True, current_dir]
-    else:
-      return [False, "fatal: Not an Engraver project (or any of the parent directories): .engraver"]
-  else:
-    if ".engraver" in listdir(current_dir):
-      return [True, current_dir]
-    else:
-      return engraver_root_dir(dirname(current_dir))
 
 def main():
   parser = argparse.ArgumentParser(description = "Manages and deploys Onyx clusters.")

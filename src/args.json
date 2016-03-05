@@ -88,6 +88,10 @@
               "help" : "Describes all machine sets",
               "shared-parsers" : [ "cluster-name" ]
             },
+            "list" : {
+              "help" : "Lists all running machines in this cluster",
+              "shared-parsers" : [ "cluster-name" ]
+            },
             "scale" : {
               "help" : "Scales this machine set up or down to a number of instances",
               "shared-parsers" : [ "cluster-name" ],
