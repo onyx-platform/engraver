@@ -62,6 +62,7 @@ fns = {("init",): init_command.init,
        ("cluster", "machines", "new"): cluster_command.cluster_machines_new,
        ("cluster", "machines", "list"): cluster_command.cluster_machines_list,
        ("cluster", "machines", "cache"): cluster_command.cluster_machines_cache,
+       ("cluster", "machines", "scale"): cluster_command.cluster_machines_scale,
        ("cluster", "machines", "describe"): cluster_command.cluster_machines_describe}
 
 def main():

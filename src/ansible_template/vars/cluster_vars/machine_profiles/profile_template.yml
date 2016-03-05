@@ -7,7 +7,6 @@ profile_id: ${ profile_id }
 ec2_image_id: ami-d05e75b8
 ec2_instance_type: c4.large
 n_machine_instances: ${ n_instances }
-
 machine_services:
 % for s in services:
   - ${ s }

@@ -113,6 +113,17 @@ def cluster_machines_cache(arg_vars, project_root):
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating local cache. Displaying cluster: " + bcolors.ENDC)
   cluster_machines_list(arg_vars, project_root, hint=False)
 
+def cluster_machines_scale(arg_vars, project_root):
+  f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
+  with open(f, "r") as stream:
+    content = yaml.load(stream)
+    content['n_machine_instances'] = int(arg_vars['n'])
+
+  with open(f, "w") as stream:
+    stream.write(yaml.dump(content))
+
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Updated local Ansible playbook. Now run: engraver cluster provision" + bcolors.ENDC)
+
 def cluster_machines_new(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Creating new Ansible machine profile..." + bcolors.ENDC)
   tpl = Template(resource_string(__name__, "ansible_template/vars/cluster_vars/machine_profiles/profile_template.yml"))
