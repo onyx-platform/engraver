@@ -57,7 +57,7 @@ def cluster_describe(arg_vars, project_root):
 def cluster_machines_describe(arg_vars, project_root):
   path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_name'] + "/machine_profiles"
   files = [f for f in listdir(path) if isfile(join(path, f))]
-  t = PrettyTable(['Profile ID', 'N Instances', 'Services'])
+  t = PrettyTable(['Profile ID', 'Desired Count', 'Services'])
   t.align["Profile ID"] = "l"
   t.align["Services"] = "l"
   for f in files:
