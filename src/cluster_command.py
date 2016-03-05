@@ -76,9 +76,9 @@ def cluster_machines_list(arg_vars, project_root, hint=True):
   t = PrettyTable(['', 'ID', 'Profile', 'Public DNS Name', 'Private IP'])
   t.align = "l"
   contents = open(path, 'r').read()
-  machines = sorted(json.loads(contents), key=lambda k: k.get('tags').get('Role'))
+  machines = sorted(json.loads(contents), key=lambda k: k.get('tags').get('ProfileId'))
   for index, m in enumerate(machines):
-    t.add_row([index + 1, m.get('id'), m.get('tags').get('Role'), m.get('public_dns_name'), m.get('private_ip_address')])
+    t.add_row([index + 1, m.get('id'), m.get('tags').get('ProfileId'), m.get('public_dns_name'), m.get('private_ip_address')])
   print t
 
 def cluster_machines_cache(arg_vars, project_root):
