@@ -7,6 +7,7 @@ import init_command
 import cluster_command
 import configure_command
 import service_command
+import logs_command
 
 from pkg_resources import resource_string
 from os import listdir, walk, getcwd
@@ -56,6 +57,7 @@ def attach_subparsers(parent_parser, shared_parsers, body, level):
       attach_subparsers(csp, shared_parsers, sub_body, (level + 1))
 
 fns = {("init",): init_command.init,
+       ("logs",): logs_command.stream_logs,
        ("configure", "aws"): configure_command.configure_aws,
        ("service", "new"): service_command.service_new,
        ("service", "remove"): service_command.service_remove,

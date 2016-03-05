@@ -1,176 +1,191 @@
 {
-  "help" : "Engraver help",
-  "shared-parsers" : {
-    "cluster-id" : {
-      "args" : {
-        "long" : "--cluster-id",
-        "required" : true,
-        "help" : "The id of the cluster"
-      }
-    },
-    "tenancy-id" : {
-      "args" : {
-        "long" : "--tenancy-id",
-        "required" : true,
-        "help" : "The :onyx/tenancy-id to deploy this application into"
-      }
-    }
-  },
-  "commands" : {
-    "init" : {
-      "help" : "Create a new Engraver project",
-      "args" : {
-        "app-name" : {
-          "long" : "app-name",
-          "help" : "The name your Engraver application"
-        }
-      }
-    },
-    "configure" : {
-      "help" : "Configure cloud provider credentials",
-      "commands": {
-        "aws" : {
-          "help" : "Configure credentials for AWS"
-        }
-      }
-    },
-    "service" : {
-      "help" : "Manage services that the cluster machines can install and run",
-      "commands": {
-        "new" : {
-          "help" : "Creates a new service and Ansible template role",
-          "args" : {
-            "service-name" : {
-              "long" : "service-name",
-              "help" : "The name of the service"
-             }
-          }
-        },
-        "remove" : {
-          "help" : "Removes a service",
-          "args" : {
-            "service-name" : {
-              "long" : "service-name",
-              "help" : "The name of the service"
-             }
-          }
-        },
-        "pull" : {
-          "help" : "Pulls a service from a Git repository",
-          "args" : {
-            "service-name" : {
-              "long" : "service-name",
-              "help" : "The name of the service"
-             },
-            "service-repo" : {
-              "long" : "service-repo",
-              "help" : "Git URL of a repository to pull from"
-             }
-          }
-        }
-      }
-    },
-    "cluster" : {
-      "help" : "Manage Onyx cluster infrastructure",
-      "commands" : {
-        "new" : {
-          "help" : "Creates configuration management scripts for a new Onyx cluster",
-          "shared-parsers" : [ "cluster-id" ]
-        },
-        "describe" : {
-          "help" : "Describes all clusters"
-        },
-        "provision" : {
-          "help" : "Provisions this Onyx cluster in the target environment",
-          "shared-parsers" : [ "cluster-id" ]
-        },
-        "machines" : {
-          "help" : "Creates a new set of machines in configuration management",
-          "commands" : {
-            "new" : {
-              "help" : "Creates a new set of machines in configuration management",
-              "shared-parsers" : [ "cluster-id" ],
-              "args" : {
-                "n" : {
-                  "long" : "n",
-                  "help" : "The number of machines to provision"
-                },
-                "services" : {
-                  "long" : "--services",
-                  "help" : "The services this set of machines will host"
-                },
-                "profile-id" : {
-                  "long" : "--profile-id",
-                  "required" : true,
-                  "help" : "The ID of this machine profile"
-                }
-              }
-            },
-            "describe" : {
-              "help" : "Describes all machine sets",
-              "shared-parsers" : [ "cluster-id" ]
-            },
-            "list" : {
-              "help" : "Lists all running machines in this cluster",
-              "shared-parsers" : [ "cluster-id" ]
-            },
-            "cache" : {
-              "help" : "Updates local cache of machines for this cluster",
-              "shared-parsers" : [ "cluster-id" ]
-            },
-            "scale" : {
-              "help" : "Scales this machine set up or down to a number of instances",
-              "shared-parsers" : [ "cluster-id" ],
-              "args" : {
-                "id" : {
-                  "long" : "--profile-id",
-                  "required" : true,
-                  "help" : "The profile ID of this machine set"
-                },
-                "n" : {
-                  "long" : "n",
-                  "help" : "The desired number of machines"
-                }
-              }
-            },
-            "remove" : {
-              "help" : "Removes this machine set",
-              "args" : {
-                "id" : {
-                  "long" : "--profile-id",
-                  "required" : true,
-                  "help" : "The profile ID of this machine set"
-                }
-              }
+    "help" : "Engraver help",
+    "shared-parsers" : {
+        "cluster-id" : {
+            "args" : {
+                "long" : "--cluster-id",
+                "required" : true,
+                "help" : "The id of the cluster"
             }
-          }
         },
-        "teardown" : {
-          "help" : "Destroys the provisioned infrastructure for this cluster",
-          "shared-parsers" : [ "cluster-id" ]
-        },
-        "remove" : {
-          "help" : "Removes the cluster from this Engraver project",
-          "shared-parsers" : [ "cluster-id" ]
+        "tenancy-id" : {
+            "args" : {
+                "long" : "--tenancy-id",
+                "required" : true,
+                "help" : "The :onyx/tenancy-id to deploy this application into"
+            }
         }
-      }
     },
-    "deploy" : {
-      "help" : "Deploy Onyx peer applications to a cluster",
-      "shared-parsers" : [ "cluster-id", "tenancy-id" ]
-    },
-    "job" : {
-      "help" : "Submit Onyx jobs to a cluster",
-      "commands" : {
-        "submit" : {
-          "help" : "Submits Onyx jobs to a cluster",
-          "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+    "commands" : {
+        "init" : {
+            "help" : "Create a new Engraver project",
+            "args" : {
+                "app-name" : {
+                    "long" : "app-name",
+                    "help" : "The name your Engraver application"
+                }
+            }
         },
-        "kill" : {
-          "help" : "Kills this job on the cluster",
-          "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+        "configure" : {
+            "help" : "Configure cloud provider credentials",
+            "commands": {
+                "aws" : {
+                    "help" : "Configure credentials for AWS"
+                }
+            }
+        },
+        "service" : {
+            "help" : "Manage services that the cluster machines can install and run",
+            "commands": {
+                "new" : {
+                    "help" : "Creates a new service and Ansible template role",
+                    "args" : {
+                        "service-name" : {
+                            "long" : "service-name",
+                            "help" : "The name of the service"
+                        }
+                    }
+                },
+                "remove" : {
+                    "help" : "Removes a service",
+                    "args" : {
+                        "service-name" : {
+                            "long" : "service-name",
+                            "help" : "The name of the service"
+                        }
+                    }
+                },
+                "pull" : {
+                    "help" : "Pulls a service from a Git repository",
+                    "args" : {
+                        "service-name" : {
+                            "long" : "service-name",
+                            "help" : "The name of the service"
+                        },
+                        "service-repo" : {
+                            "long" : "service-repo",
+                            "help" : "Git URL of a repository to pull from"
+                        }
+                    }
+                }
+            }
+        },
+        "logs" : {
+            "help" : "Stream logs from services running in a cluster",
+            "args" : {
+                "service" : {
+                    "long" : "--service",
+                    "required" : true,
+                    "help" : "The service to stream the logs from"
+                },
+                "host" : {
+                    "long" : "host",
+                    "help" : "The host to connect to"
+                }
+            },
+            "shared-parsers" : [ "cluster-id" ]
+        },
+        "cluster" : {
+            "help" : "Manage Onyx cluster infrastructure",
+            "commands" : {
+                "new" : {
+                    "help" : "Creates configuration management scripts for a new Onyx cluster",
+                    "shared-parsers" : [ "cluster-id" ]
+                },
+                "describe" : {
+                    "help" : "Describes all clusters"
+                },
+                "provision" : {
+                    "help" : "Provisions this Onyx cluster in the target environment",
+                    "shared-parsers" : [ "cluster-id" ]
+                },
+                "machines" : {
+                    "help" : "Creates a new set of machines in configuration management",
+                    "commands" : {
+                        "new" : {
+                            "help" : "Creates a new set of machines in configuration management",
+                            "shared-parsers" : [ "cluster-id" ],
+                            "args" : {
+                                "n" : {
+                                    "long" : "n",
+                                    "help" : "The number of machines to provision"
+                                },
+                                "services" : {
+                                    "long" : "--services",
+                                    "help" : "The services this set of machines will host"
+                                },
+                                "profile-id" : {
+                                    "long" : "--profile-id",
+                                    "required" : true,
+                                    "help" : "The ID of this machine profile"
+                                }
+                            }
+                        },
+                        "describe" : {
+                            "help" : "Describes all machine sets",
+                            "shared-parsers" : [ "cluster-id" ]
+                        },
+                        "list" : {
+                            "help" : "Lists all running machines in this cluster",
+                            "shared-parsers" : [ "cluster-id" ]
+                        },
+                        "cache" : {
+                            "help" : "Updates local cache of machines for this cluster",
+                            "shared-parsers" : [ "cluster-id" ]
+                        },
+                        "scale" : {
+                            "help" : "Scales this machine set up or down to a number of instances",
+                            "shared-parsers" : [ "cluster-id" ],
+                            "args" : {
+                                "id" : {
+                                    "long" : "--profile-id",
+                                    "required" : true,
+                                    "help" : "The profile ID of this machine set"
+                                },
+                                "n" : {
+                                    "long" : "n",
+                                    "help" : "The desired number of machines"
+                                }
+                            }
+                        },
+                        "remove" : {
+                            "help" : "Removes this machine set",
+                            "args" : {
+                                "id" : {
+                                    "long" : "--profile-id",
+                                    "required" : true,
+                                    "help" : "The profile ID of this machine set"
+                                }
+                            }
+                        }
+                    }
+                },
+                "teardown" : {
+                    "help" : "Destroys the provisioned infrastructure for this cluster",
+                    "shared-parsers" : [ "cluster-id" ]
+                },
+                "remove" : {
+                    "help" : "Removes the cluster from this Engraver project",
+                    "shared-parsers" : [ "cluster-id" ]
+                }
+            }
+        },
+        "deploy" : {
+            "help" : "Deploy Onyx peer applications to a cluster",
+            "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+        },
+        "job" : {
+            "help" : "Submit Onyx jobs to a cluster",
+            "commands" : {
+                "submit" : {
+                    "help" : "Submits Onyx jobs to a cluster",
+                    "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+                },
+                "kill" : {
+                    "help" : "Kills this job on the cluster",
+                    "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+                }
+            }
         }
-      }
     }
-  }
 }
