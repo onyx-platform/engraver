@@ -6,6 +6,7 @@ import json
 import init_command
 import cluster_command
 import configure_command
+import service_command
 
 from pkg_resources import resource_string
 from os import listdir, walk, getcwd
@@ -56,6 +57,9 @@ def attach_subparsers(parent_parser, shared_parsers, body, level):
 
 fns = {("init",): init_command.init,
        ("configure", "aws"): configure_command.configure_aws,
+       ("service", "new"): service_command.service_new,
+       ("service", "remove"): service_command.service_remove,
+       ("service", "pull"): service_command.service_pull,
        ("cluster", "new"): cluster_command.cluster_new,
        ("cluster", "describe"): cluster_command.cluster_describe,
        ("cluster", "provision"): cluster_command.cluster_provision,

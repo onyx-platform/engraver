@@ -38,13 +38,35 @@
       "help" : "Manage services that the cluster machines can install and run",
       "commands": {
         "new" : {
-          "help" : "Creates a new service and Ansible template role"
+          "help" : "Creates a new service and Ansible template role",
+          "args" : {
+            "service-name" : {
+              "long" : "service-name",
+              "help" : "The name of the service"
+             }
+          }
         },
         "remove" : {
-          "help" : "Removes a service"
+          "help" : "Removes a service",
+          "args" : {
+            "service-name" : {
+              "long" : "service-name",
+              "help" : "The name of the service"
+             }
+          }
         },
         "pull" : {
-          "help" : "Pulls a service from a Git repository"
+          "help" : "Pulls a service from a Git repository",
+          "args" : {
+            "service-name" : {
+              "long" : "service-name",
+              "help" : "The name of the service"
+             },
+            "service-repo" : {
+              "long" : "service-repo",
+              "help" : "Git URL of a repository to pull from"
+             }
+          }
         }
       }
     },
