@@ -41,6 +41,11 @@ def init(arg_vars, project_root):
   call(["git", "clone", "https://github.com/onyx-platform/engraver-zookeeper.git", roles_dir + "/zookeeper"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")
+
+  print(bcolors.OKBLUE + "> Cloning Ansible Onyx playbook from Git. Streaming Git output ..." + bcolors.HEADER)
+  call(["git", "clone", "https://github.com/onyx-platform/engraver-onyx.git", roles_dir + "/onyx"])
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print("")
   
   print(bcolors.OKBLUE + "> Initializing Ansible vars directories..." + bcolors.ENDC)
   call(["mkdir", "-p", (ansible_dir + "/group_vars")])

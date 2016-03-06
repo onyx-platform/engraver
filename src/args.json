@@ -108,67 +108,6 @@
                     "help" : "Provisions this Onyx cluster in the target environment",
                     "shared-parsers" : [ "cluster-id" ]
                 },
-                "machines" : {
-                    "help" : "Creates a new set of machines in configuration management",
-                    "commands" : {
-                        "new" : {
-                            "help" : "Creates a new set of machines in configuration management",
-                            "shared-parsers" : [ "cluster-id" ],
-                            "args" : {
-                                "n" : {
-                                    "long" : "n",
-                                    "help" : "The number of machines to provision"
-                                },
-                                "services" : {
-                                    "long" : "--services",
-                                    "help" : "The services this set of machines will host"
-                                },
-                                "profile-id" : {
-                                    "long" : "--profile-id",
-                                    "required" : true,
-                                    "help" : "The ID of this machine profile"
-                                }
-                            }
-                        },
-                        "describe" : {
-                            "help" : "Describes all machine sets",
-                            "shared-parsers" : [ "cluster-id" ]
-                        },
-                        "list" : {
-                            "help" : "Lists all running machines in this cluster",
-                            "shared-parsers" : [ "cluster-id" ]
-                        },
-                        "cache" : {
-                            "help" : "Updates local cache of machines for this cluster",
-                            "shared-parsers" : [ "cluster-id" ]
-                        },
-                        "scale" : {
-                            "help" : "Scales this machine set up or down to a number of instances",
-                            "shared-parsers" : [ "cluster-id" ],
-                            "args" : {
-                                "id" : {
-                                    "long" : "--profile-id",
-                                    "required" : true,
-                                    "help" : "The profile ID of this machine set"
-                                },
-                                "n" : {
-                                    "long" : "n",
-                                    "help" : "The desired number of machines"
-                                }
-                            }
-                        },
-                        "remove" : {
-                            "help" : "Removes this machine set",
-                            "args" : {
-                                "id" : {
-                                    "long" : "--profile-id",
-                                    "required" : true,
-                                    "help" : "The profile ID of this machine set"
-                                }
-                            }
-                        }
-                    }
-                },
                 "teardown" : {
                     "help" : "Destroys the provisioned infrastructure for this cluster",
                     "shared-parsers" : [ "cluster-id" ]
@@ -179,6 +118,68 @@
                 }
             }
         },
+        "machines" : {
+            "help" : "Creates a new set of machines in configuration management",
+            "commands" : {
+                "new" : {
+                    "help" : "Creates a new set of machines in configuration management",
+                    "shared-parsers" : [ "cluster-id" ],
+                    "args" : {
+                        "n" : {
+                            "long" : "n",
+                            "help" : "The number of machines to provision"
+                        },
+                        "services" : {
+                            "long" : "--services",
+                            "help" : "The services this set of machines will host"
+                        },
+                        "profile-id" : {
+                            "long" : "--profile-id",
+                            "required" : true,
+                            "help" : "The ID of this machine profile"
+                        }
+                    }
+                },
+                "describe" : {
+                    "help" : "Describes all machine sets",
+                    "shared-parsers" : [ "cluster-id" ]
+                },
+                "list" : {
+                    "help" : "Lists all running machines in this cluster",
+                    "shared-parsers" : [ "cluster-id" ]
+                },
+                "cache" : {
+                    "help" : "Updates local cache of machines for this cluster",
+                    "shared-parsers" : [ "cluster-id" ]
+                },
+                "scale" : {
+                    "help" : "Scales this machine set up or down to a number of instances",
+                    "shared-parsers" : [ "cluster-id" ],
+                    "args" : {
+                        "id" : {
+                            "long" : "--profile-id",
+                            "required" : true,
+                            "help" : "The profile ID of this machine set"
+                        },
+                        "n" : {
+                            "long" : "n",
+                            "help" : "The desired number of machines"
+                        }
+                    }
+                },
+                "remove" : {
+                    "help" : "Removes this machine set",
+                    "args" : {
+                        "id" : {
+                            "long" : "--profile-id",
+                            "required" : true,
+                            "help" : "The profile ID of this machine set"
+                        }
+                    }
+                }
+            }
+        },
+
         "deploy" : {
             "help" : "Deploy Onyx peer applications to a cluster",
             "shared-parsers" : [ "cluster-id", "tenancy-id" ]
