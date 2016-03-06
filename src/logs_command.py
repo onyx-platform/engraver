@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import ConfigParser
+
 from os.path import expanduser
 from subprocess import call
 

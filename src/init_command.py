@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import json
+
 from colors import bcolors
 from subprocess import call
 from pkg_resources import resource_filename
@@ -10,13 +12,14 @@ def init(arg_vars, project_root):
   roles_dir = ansible_dir + "/roles"
 
   print(bcolors.OKBLUE + "> Invoking Leiningen and streaming its output ..." + bcolors.HEADER)
-  call(["lein", "new", "onyx-app", app_name])
+  call(["lein", "new", "onyx-app", app_name, "+docker"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Leiningen." + bcolors.ENDC)
   print("")
 
   print(bcolors.OKBLUE + "> Initializing .engraver folders ..." + bcolors.ENDC)
   call(["mkdir", "-p", (app_name + "/.engraver")])
-  call(["touch", (app_name + "/.engraver/config")])
+  with open((app_name + "/.engraver/config.json"), "w") as text_file:
+    json.dump({'organization': arg_vars['organization']}, text_file)
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished .engraver folder initialization." + bcolors.ENDC)
   print("")
 

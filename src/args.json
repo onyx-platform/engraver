@@ -20,6 +20,10 @@
         "init" : {
             "help" : "Create a new Engraver project",
             "args" : {
+                "organization" : {
+                    "long" : "organization",
+                    "help" : "Your organization name. Used for namespacing your application"
+                },
                 "app-name" : {
                     "long" : "app-name",
                     "help" : "The name your Engraver application"

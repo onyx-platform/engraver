@@ -8,6 +8,7 @@ import cluster_command
 import configure_command
 import machines_command
 import service_command
+import deploy_command
 import logs_command
 
 from pkg_resources import resource_string
@@ -61,6 +62,7 @@ def attach_subparsers(parent_parser, shared_parsers, body, level):
 
 fns = {("init",): init_command.init,
        ("logs",): logs_command.stream_logs,
+       ("deploy",): deploy_command.deploy,
        ("configure", "aws"): configure_command.configure_aws,
        ("service", "new"): service_command.service_new,
        ("service", "remove"): service_command.service_remove,
