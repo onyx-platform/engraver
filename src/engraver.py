@@ -30,8 +30,10 @@ def add_argument(parser, body):
 
   opts = {}
   opts['help'] = body['help']
-  if body.get('required'):
-     opts['required'] = True
+
+  if body.get('required'): opts['required'] = True
+  if body.get('default'): opts['default'] = body.get('default')
+  if body.get('choices'): opts['choices'] = body.get('choices')
 
   apply(parser.add_argument, long_opt, opts)
 

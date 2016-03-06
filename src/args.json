@@ -90,7 +90,16 @@
             "commands" : {
                 "new" : {
                     "help" : "Creates configuration management scripts for a new Onyx cluster",
-                    "shared-parsers" : [ "cluster-id" ]
+                    "shared-parsers" : [ "cluster-id" ],
+                    "args" : {
+                        "provider" : {
+                            "long" : "--provider",
+                            "required" : false,
+                            "choices" : ["aws"],
+                            "default" : "aws",
+                            "help" : "The clouder provider to deploy the cluster into"
+                        }
+                    }
                 },
                 "describe" : {
                     "help" : "Describes all clusters"
