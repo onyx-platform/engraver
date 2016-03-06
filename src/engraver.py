@@ -6,6 +6,7 @@ import json
 import init_command
 import cluster_command
 import configure_command
+import machines_command
 import service_command
 import logs_command
 
@@ -67,11 +68,11 @@ fns = {("init",): init_command.init,
        ("cluster", "new"): cluster_command.cluster_new,
        ("cluster", "describe"): cluster_command.cluster_describe,
        ("cluster", "provision"): cluster_command.cluster_provision,
-       ("cluster", "machines", "new"): cluster_command.cluster_machines_new,
-       ("cluster", "machines", "list"): cluster_command.cluster_machines_list,
-       ("cluster", "machines", "cache"): cluster_command.cluster_machines_cache,
-       ("cluster", "machines", "scale"): cluster_command.cluster_machines_scale,
-       ("cluster", "machines", "describe"): cluster_command.cluster_machines_describe}
+       ("machines", "new"): machines_command.machines_new,
+       ("machines", "list"): machines_command.machines_list,
+       ("machines", "cache"): machines_command.machines_cache,
+       ("machines", "scale"): machines_command.machines_scale,
+       ("machines", "describe"): machines_command.machines_describe}
 
 def main():
   parser = argparse.ArgumentParser(description = "Manages and deploys Onyx clusters.")

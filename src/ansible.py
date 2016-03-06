@@ -2,7 +2,9 @@
 
 import ConfigParser
 
-from os.path import expanduser
+from pkg_resources import resource_string
+from mako.template import Template
+from os.path import isfile, join, expanduser, exists
 from os import chdir
 from subprocess import call
 
@@ -26,3 +28,17 @@ def invoke_ansible(arg_vars, project_root, playbook):
         "-e", ("aws_secret_key=" + aws_secret_key),
         "-e", ("engraver_root=" + project_root),
         project_root + "/ansible/" + playbook])
+
+def refresh_playbook(arg_vars, project_root):
+  tpl = Template(resource_string(__name__, "ansible_template/engraver_aws.yml"))
+  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
+  profile_files = [f for f in listdir(path) if isfile(join(path, f))]
+
+  profiles = {}
+  for f in profile_files:
+    with open((path + "/"  + f), "r") as handle:
+      content = yaml.load(handle)
+      profiles[content['profile_id']] = {'machine_services': content['machine_services']}
+
+  with open((project_root + "/ansible/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
+    text_file.write(tpl.render(profiles=profiles))
