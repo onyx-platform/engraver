@@ -5,6 +5,7 @@ import os
 
 from subprocess import check_output, call
 
+from ansible import invoke_ansible
 from colors import bcolors
 
 def deploy(arg_vars, project_root):
@@ -28,3 +29,8 @@ def deploy(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Turning image into a tar file ..." + bcolors.ENDC)
   call(["docker", "save", "-o", "target/" + project_name + "-" + version + ".tar.gz", image])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished tar'ing image." + bcolors.ENDC)
+
+  print(bcolors.OKBLUE + "> Running Ansible deployment playbook. Streaming Ansible output ..." + bcolors.ENDC)
+  invoke_ansible(arg_vars, project_root, arg_vars['cluster_id'] + ".yml",
+                 {"onyx_docker_image": image})
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible. Onyx has been successfully deployed." + bcolors.ENDC)

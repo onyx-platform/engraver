@@ -8,7 +8,14 @@ from os.path import isfile, join, expanduser, exists
 from os import chdir
 from subprocess import call
 
-def invoke_ansible(arg_vars, project_root, playbook):
+def form_env_vars(extras):
+  result = []
+  for k, v in extras.iteritems():
+    result.append("-e")
+    result.append(k + "=" + v)
+  return result
+
+def invoke_ansible(arg_vars, project_root, playbook, extras = {}):
   config = ConfigParser.ConfigParser()
   engraver_profile = expanduser("~") + "/.engraver"
   config.read(engraver_profile)
@@ -20,14 +27,17 @@ def invoke_ansible(arg_vars, project_root, playbook):
 
   chdir(project_root + "/ansible")
 
-  call(["ansible-playbook", "--private-key", pem_file_path,
-        "-i", ",", "-e", "remote_user='ubuntu'",
-        "-e", ("onyx_cluster_id=" + arg_vars['cluster_id']),
-        "-e", ("aws_key_name=" + aws_key_name),
-        "-e", ("aws_access_key=" + aws_access_key),
-        "-e", ("aws_secret_key=" + aws_secret_key),
-        "-e", ("engraver_root=" + project_root),
-        project_root + "/ansible/" + playbook])
+  pre = ["ansible-playbook", "--private-key", pem_file_path,
+         "-i", ",", "-e", "remote_user='ubuntu'",
+         "-e", ("onyx_cluster_id=" + arg_vars['cluster_id']),
+         "-e", ("aws_key_name=" + aws_key_name),
+         "-e", ("aws_access_key=" + aws_access_key),
+         "-e", ("aws_secret_key=" + aws_secret_key),
+         "-e", ("engraver_root=" + project_root)]
+
+  post = [project_root + "/ansible/" + playbook]
+
+  call(pre + form_env_vars(extras) + post)
 
 def refresh_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/engraver_aws.yml"))
