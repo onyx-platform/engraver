@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import yaml
 
 from pkg_resources import resource_string
 from mako.template import Template
 from os.path import isfile, join, expanduser, exists
-from os import chdir
+from os import chdir, listdir
 from subprocess import call
 
 def form_env_vars(extras):
@@ -39,7 +40,7 @@ def invoke_ansible(arg_vars, project_root, playbook, extras = {}):
 
   call(pre + form_env_vars(extras) + post)
 
-def refresh_playbook(arg_vars, project_root):
+def refresh_provisioning_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/engraver_aws.yml"))
   path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
@@ -51,4 +52,19 @@ def refresh_playbook(arg_vars, project_root):
       profiles[content['profile_id']] = {'machine_services': content['machine_services']}
 
   with open((project_root + "/ansible/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
+    text_file.write(tpl.render(profiles=profiles))
+
+def refresh_deployment_playbook(arg_vars, project_root):
+  tpl = Template(resource_string(__name__, "ansible_template/deploy.yml"))
+  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
+  profile_files = [f for f in listdir(path) if isfile(join(path, f))]
+
+  profiles = []
+  for f in profile_files:
+    with open((path + "/"  + f), "r") as handle:
+      content = yaml.load(handle)
+      if 'onyx' in content['machine_services']:
+        profiles.append(content['profile_id'])
+
+  with open((project_root + "/ansible/deploy.yml"), "w") as text_file:
     text_file.write(tpl.render(profiles=profiles))

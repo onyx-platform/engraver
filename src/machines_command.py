@@ -12,7 +12,7 @@ from os import listdir, walk, chdir
 from subprocess import call
 from colors import bcolors
 
-from ansible import invoke_ansible, refresh_playbook
+from ansible import invoke_ansible, refresh_provisioning_playbook
 
 def machines_describe(arg_vars, project_root):
   path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
@@ -28,7 +28,7 @@ def machines_describe(arg_vars, project_root):
 
 def machines_list(arg_vars, project_root, hint=True):
   if hint:
-    print(bcolors.OKBLUE + "> Hint: Displaying cached contents. Refresh status with: engraver cluster machines cache" + bcolors.ENDC)
+    print(bcolors.OKBLUE + "> Hint: Displaying cached contents. Refresh status with: engraver machines cache" + bcolors.ENDC)
     print("")
   path = project_root + "/.engraver/clusters/" + arg_vars['cluster_id'] + ".json"
 
@@ -57,7 +57,7 @@ def machines_cache(arg_vars, project_root):
   invoke_ansible(arg_vars, project_root, "refresh_cache.yml")
 
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating local cache. Displaying cluster: " + bcolors.ENDC)
-  cluster_machines_list(arg_vars, project_root, hint=False)
+  machines_list(arg_vars, project_root, hint=False)
 
 def machines_scale(arg_vars, project_root):
   f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
@@ -82,6 +82,6 @@ def machines_new(arg_vars, project_root):
                                n_instances=arg_vars['n'],
                                services=[x.strip() for x in arg_vars['services'].split(",")]))
 
-  refresh_playbook(arg_vars, project_root)
+  refresh_provisioning_playbook(arg_vars, project_root)
 
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible machine profile creation." + bcolors.ENDC)

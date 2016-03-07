@@ -9,8 +9,6 @@
     - "group_vars/{{ onyx_cluster_id }}.yml"
   vars:
     - create_vpc: yes
-    - create_ec2: no
-    - cache: no
   roles:
     - aws
 
@@ -22,9 +20,7 @@
     - "group_vars/{{ onyx_cluster_id }}.yml"
     - "vars/cluster_vars/{{ onyx_cluster_id }}/machine_profiles/${ p }_profile.yml"
   vars:
-    - create_vpc: no
     - create_ec2: yes
-    - cache: no
   roles:
     - aws
 
@@ -35,8 +31,6 @@
   vars_files:
     - "group_vars/{{ onyx_cluster_id }}.yml"
   vars:
-    - create_vpc: no
-    - create_ec2: no
     - cache: yes
   roles:
     - aws

@@ -12,7 +12,7 @@ from os import listdir, walk, chdir
 from subprocess import call
 from colors import bcolors
 
-from ansible import invoke_ansible, refresh_playbook
+from ansible import invoke_ansible, refresh_provisioning_playbook
 
 def cluster_new(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
@@ -25,7 +25,7 @@ def cluster_new(arg_vars, project_root):
   with open((project_root + "/ansible/group_vars/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
     text_file.write(tpl.render(cluster_id=arg_vars['cluster_id']))
 
-  refresh_playbook(arg_vars, project_root)
+  refresh_provisioning_playbook(arg_vars, project_root)
 
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible playbook creation." + bcolors.ENDC)
   print("")

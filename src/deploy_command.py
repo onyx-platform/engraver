@@ -5,7 +5,7 @@ import os
 
 from subprocess import check_output, call
 
-from ansible import invoke_ansible
+from ansible import invoke_ansible, refresh_deployment_playbook
 from colors import bcolors
 
 def deploy(arg_vars, project_root):
@@ -26,11 +26,17 @@ def deploy(arg_vars, project_root):
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished building container image " + image + "." + bcolors.ENDC)
   print("")
 
-  print(bcolors.OKBLUE + "> Turning image into a tar file ..." + bcolors.ENDC)
-  call(["docker", "save", "-o", "target/" + project_name + "-" + version + ".tar.gz", image])
+  print(bcolors.OKBLUE + "> Uploading image to DockerHub ..." + bcolors.ENDC)
+  fname = "target/" + project_name + "-" + version + ".tar.gz"
+  call(["docker", "push", image])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished tar'ing image." + bcolors.ENDC)
+  print("")
+
+  print(bcolors.OKBLUE + "> Updating Ansible deployment playbook ..." + bcolors.ENDC)
+  refresh_deployment_playbook(arg_vars, project_root)
+  print(bcolors.OKBLUE + "> Ansible playbook update complete." + bcolors.ENDC)
+  print("")
 
   print(bcolors.OKBLUE + "> Running Ansible deployment playbook. Streaming Ansible output ..." + bcolors.ENDC)
-  invoke_ansible(arg_vars, project_root, arg_vars['cluster_id'] + ".yml",
-                 {"onyx_docker_image": image})
+  invoke_ansible(arg_vars, project_root, "deploy.yml", {"docker_image": ("../" + fname)})
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible. Onyx has been successfully deployed." + bcolors.ENDC)
