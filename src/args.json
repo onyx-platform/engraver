@@ -20,10 +20,6 @@
         "init" : {
             "help" : "Create a new Engraver project",
             "args" : {
-                "organization" : {
-                    "long" : "organization",
-                    "help" : "Your organization name. Used for namespacing your application"
-                },
                 "app-name" : {
                     "long" : "app-name",
                     "help" : "The name your Engraver application"
@@ -186,7 +182,28 @@
 
         "deploy" : {
             "help" : "Deploy Onyx peer applications to a cluster",
-            "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+            "shared-parsers" : [ "cluster-id", "tenancy-id" ],
+            "args" : {
+                "via" : {
+                    "long" : "--via",
+                    "required" : true,
+                    "help" : "The method of deployment",
+                    "choices" : ["dockerhub"]
+                },
+                "dockerhub-username" : {
+                    "long" : "--dockerhub-username",
+                    "help" : "The username of your DockerHub account"
+                },
+                "n-peers" : {
+                    "long" : "--n-peers",
+                    "help" : "The number of peers to start per Onyx container"
+                },
+                "skip-uberjar" : {
+                    "long" : "--skip-uberjar",
+                    "help" : "Does not build a new uberjar for this project",
+                    "action" : "store_true"
+                }
+            }
         },
         "job" : {
             "help" : "Submit Onyx jobs to a cluster",

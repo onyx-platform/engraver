@@ -18,8 +18,7 @@ def init(arg_vars, project_root):
 
   print(bcolors.OKBLUE + "> Initializing .engraver folders ..." + bcolors.ENDC)
   call(["mkdir", "-p", (app_name + "/.engraver")])
-  with open((app_name + "/.engraver/config.json"), "w") as text_file:
-    json.dump({'organization': arg_vars['organization']}, text_file)
+  call(["touch", (app_name + "/.engraver/config.json")])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished .engraver folder initialization." + bcolors.ENDC)
   print("")
 
