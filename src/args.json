@@ -136,6 +136,11 @@
                             "long" : "--profile-id",
                             "required" : true,
                             "help" : "The ID of this machine profile"
+                        },
+                        "size" : {
+                            "long" : "--size",
+                            "default" : "c4.large",
+                            "help" : "The size of the machine to provision"
                         }
                     }
                 },

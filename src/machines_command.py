@@ -106,6 +106,7 @@ def machines_new(arg_vars, project_root):
              "_profile.yml"), "w") as text_file:
     text_file.write(tpl.render(profile_id=arg_vars['profile_id'],
                                n_instances=arg_vars['n'],
+                               size=arg_vars['size'],
                                services=[x.strip() for x in arg_vars['services'].split(",")]))
 
   refresh_provisioning_playbook(arg_vars, project_root)
