@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 class bcolors:
-    HEADER = '\033[95m'
+    HEADER = '\033[90m'
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
     WARNING = '\033[93m'

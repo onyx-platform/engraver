@@ -29,6 +29,12 @@ def init(arg_vars, project_root):
   call(["cp", resource_filename(__name__, "ansible_template/cluster_remove.yml"), ansible_dir])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Ansible." + bcolors.ENDC)
   print("")
+
+  print(bcolors.OKBLUE + "> Updating .gitignore for Engraver files ..." + bcolors.HEADER)
+  call("echo '.engraver/clusters/*' >> " + app_name + "/.gitignore", shell=True)
+  call("echo 'ansible/machines_remove.yml' >> " + app_name + "/.gitignore", shell=True)
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating .gitignore." + bcolors.ENDC)
+  print("")
   
   print(bcolors.OKBLUE + "> Cloning Ansible AWS playbook from Git. Streaming Git output ..." + bcolors.HEADER)
   call(["git", "clone", "https://github.com/onyx-platform/engraver-aws.git", roles_dir + "/aws"])
