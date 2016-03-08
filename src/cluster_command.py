@@ -35,11 +35,15 @@ def cluster_describe(arg_vars, project_root):
   path = project_root + "/ansible/vars/cluster_vars"
   print(path)
   clusters = next(walk(path))[1]
-  t = PrettyTable(['Cluster Name'])
+  t = PrettyTable(['Cluster Name', 'AWS Region', 'AWS Availability Zone'])
   t.align = "l"
 
   for c in clusters:
-    t.add_row([c])
+    with open((project_root + "/ansible/group_vars/" + c + ".yml"), "r") as stream:
+      content = yaml.load(stream)
+      region = content['aws_region']
+      az = content['aws_subnet_az']
+      t.add_row([c, region, az])
 
   print t
 
