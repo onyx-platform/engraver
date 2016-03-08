@@ -35,7 +35,6 @@ def cluster_new(arg_vars, project_root):
 
 def cluster_describe(arg_vars, project_root):
   path = project_root + "/ansible/vars/cluster_vars"
-  print(path)
   clusters = next(walk(path))[1]
   t = PrettyTable(['Cluster Name', 'Cloud Provider', 'Region', 'Availability Zone'])
   t.align = "l"
