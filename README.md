@@ -238,7 +238,17 @@ The above command uberjars your application, creates a container image, pushes i
 
 #### Teardown
 
+When you're down with this tutorial, you can tear everything down with:
+
+```
+$ engraver cluster teardown --cluster-id dev
+```
+
+This will delete all EC2 instances in your VPC, then delete the VPC entirely.
+
 #### Generated Files
+
+### Full Spec
 
 ### License
 
