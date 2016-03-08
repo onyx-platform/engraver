@@ -222,6 +222,22 @@ $ engraver machines list --cluster-id dev
 
 #### Application Deployment
 
+Everything is in place to deploy our application. We're going to deploy our application as a container using Docker and DockerHub. Make sure you're authenticated to DockerHub with:
+
+```
+$ docker login
+```
+
+Then deploy with:
+
+```
+$ engraver deploy --via dockerhub --cluster-id dev --tenancy-id mdrogalis --dockerhub-username michaeldrogalis --n-peers 4
+```
+
+The above command uberjars your application, creates a container image, pushes it to DockerHub, then pulls it down onto any machines in your cluster that run the "Onyx" service. It will starts `4` peers on each machine. This is going to take a while for the first time, so you might want to grab a cup of coffee. The Docker image for your application is uploading its base image, which includes Java, plus its own uberjar. After your first push and pull to/from DockerHub, the base image will be cached on both DockerHub and the machines on your cluster - drastically cutting down on upload/download time thereafter.
+
+#### Teardown
+
 #### Generated Files
 
 ### License
