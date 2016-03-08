@@ -46,6 +46,9 @@
                         }
                     }
                 },
+                "describe" : {
+                    "help" : "Describes all known services for this Engraver project"
+                },
                 "remove" : {
                     "help" : "Removes a service",
                     "args" : {
@@ -175,7 +178,8 @@
                             "required" : true,
                             "help" : "The profile ID of this machine set"
                         }
-                    }
+                    },
+                    "shared-parsers" : [ "cluster-id" ]
                 }
             }
         },

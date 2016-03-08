@@ -66,8 +66,9 @@ fns = {("init",): init_command.init,
        ("deploy",): deploy_command.deploy,
        ("configure", "aws"): configure_command.configure_aws,
        ("service", "new"): service_command.service_new,
-       ("service", "remove"): service_command.service_remove,
        ("service", "pull"): service_command.service_pull,
+       ("service", "remove"): service_command.service_remove,
+       ("service", "describe"): service_command.service_describe,
        ("cluster", "new"): cluster_command.cluster_new,
        ("cluster", "describe"): cluster_command.cluster_describe,
        ("cluster", "provision"): cluster_command.cluster_provision,
@@ -75,6 +76,7 @@ fns = {("init",): init_command.init,
        ("machines", "list"): machines_command.machines_list,
        ("machines", "cache"): machines_command.machines_cache,
        ("machines", "scale"): machines_command.machines_scale,
+       ("machines", "remove"): machines_command.machines_remove,
        ("machines", "describe"): machines_command.machines_describe}
 
 def main():

@@ -8,7 +8,7 @@ from pkg_resources import resource_filename, resource_string
 from prettytable import PrettyTable
 from mako.template import Template
 from os.path import isfile, join, expanduser, exists
-from os import listdir, walk, chdir
+from os import listdir, walk
 from subprocess import call
 from colors import bcolors
 
@@ -23,8 +23,31 @@ def machines_describe(arg_vars, project_root):
   for f in files:
     with open(path + "/" + f, 'r') as stream:
       content = yaml.load(stream)
-      t.add_row([content['profile_id'], content['ec2_instance_type'], ", ".join(content['machine_services']), content['n_machine_instances']])
+      t.add_row([content['profile_id'], content['ec2_instance_type'],
+                 ", ".join(content['machine_services']),
+                 content['n_machine_instances']])
   print t
+
+def machines_remove(arg_vars, project_root):
+  print(bcolors.OKBLUE + "> Removing machines provisioned with profile id " + arg_vars['profile_id'] + " ..." + bcolors.ENDC)
+  f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
+
+  with open(f, "r") as stream:
+    content = yaml.load(stream)
+    content['n_machine_instances'] = 0
+
+  with open(f, "w") as stream:
+    stream.write(yaml.dump(content))
+
+  tpl = Template(resource_string(__name__, "ansible_template/machines_remove.yml"))
+  with open(project_root + "/ansible/machines_remove.yml", "w") as text_file:
+    text_file.write(tpl.render(profile=arg_vars['profile_id']))
+
+  print(bcolors.OKBLUE + "> Scaling down instances. Streaming Ansible output ... " + bcolors.ENDC)
+  invoke_ansible(arg_vars, project_root, "machines_remove.yml")
+  call(["rm", f])
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished scale down." + bcolors.ENDC)
+  print("")
 
 def machines_list(arg_vars, project_root, hint=True):
   if hint:
@@ -53,7 +76,6 @@ def machines_cache(arg_vars, project_root):
   aws_key_name = config.get('aws', 'aws_key_name', 0)
   pem_file_path = config.get('aws', 'pem_file_name', 0)
 
-  chdir(project_root + "/ansible")
   invoke_ansible(arg_vars, project_root, "refresh_cache.yml")
 
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating local cache. Displaying cluster: " + bcolors.ENDC)
