@@ -35,7 +35,7 @@ def cluster_describe(arg_vars, project_root):
   path = project_root + "/ansible/vars/cluster_vars"
   print(path)
   clusters = next(walk(path))[1]
-  t = PrettyTable(['Cluster Name', 'AWS Region', 'AWS Availability Zone'])
+  t = PrettyTable(['Cluster Name', 'Cloud Provider', 'Region', 'Availability Zone'])
   t.align = "l"
 
   for c in clusters:
@@ -43,7 +43,7 @@ def cluster_describe(arg_vars, project_root):
       content = yaml.load(stream)
       region = content['aws_region']
       az = content['aws_subnet_az']
-      t.add_row([c, region, az])
+      t.add_row([c, 'AWS', region, az])
 
   print t
 

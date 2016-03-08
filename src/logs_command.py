@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import yaml
 
-from os.path import expanduser
+from os.path import expanduser, exists
 from subprocess import call
+from colors import bcolors
+from util import verify_cluster_exists
 
 def stream_logs(arg_vars, project_root):
   config = ConfigParser.ConfigParser()
@@ -11,4 +14,15 @@ def stream_logs(arg_vars, project_root):
   config.read(engraver_profile)
   pem_file_path = config.get('aws', 'pem_file_name', 0)
 
-  call(["ssh", "-t", "-i", pem_file_path, "ubuntu@" + arg_vars['host'], "docker logs -f " + arg_vars['service']])
+  f = project_root + "/ansible/roles/" + arg_vars['service']
+  if verify_cluster_exists(arg_vars, project_root):
+    if exists(f):
+      with open(f + "/defaults/main.yml", "r") as stream:
+        content = yaml.load(stream)
+        if content.get('container_name'):
+          container = ['container_name']
+          call(["ssh", "-t", "-i", pem_file_path, "ubuntu@" + arg_vars['host'], "docker logs -f " + container])
+        else:
+          print(bcolors.FAIL + "> Service does not define container_name in defaults/main.yml. Cannot stream logs." + bcolors.ENDC)
+    else:
+      print(bcolors.FAIL + "> Service not found." + bcolors.ENDC)
