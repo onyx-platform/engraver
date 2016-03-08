@@ -112,11 +112,7 @@
                     "shared-parsers" : [ "cluster-id" ]
                 },
                 "teardown" : {
-                    "help" : "Destroys the provisioned infrastructure for this cluster",
-                    "shared-parsers" : [ "cluster-id" ]
-                },
-                "remove" : {
-                    "help" : "Removes the cluster from this Engraver project",
+                    "help" : "Destroys all provisioned infrastructure for this cluster and removes it from configuration",
                     "shared-parsers" : [ "cluster-id" ]
                 }
             }
@@ -170,8 +166,8 @@
                         }
                     }
                 },
-                "remove" : {
-                    "help" : "Removes this machine set",
+                "teardown" : {
+                    "help" : "Destroys the machines running this profile ID and removes the profile from configuration",
                     "args" : {
                         "id" : {
                             "long" : "--profile-id",

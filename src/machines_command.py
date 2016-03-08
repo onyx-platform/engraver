@@ -28,7 +28,7 @@ def machines_describe(arg_vars, project_root):
                  content['n_machine_instances']])
   print t
 
-def machines_remove(arg_vars, project_root):
+def machines_teardown(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Removing machines provisioned with profile id " + arg_vars['profile_id'] + " ..." + bcolors.ENDC)
   f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
 
@@ -47,7 +47,6 @@ def machines_remove(arg_vars, project_root):
   invoke_ansible(arg_vars, project_root, "machines_remove.yml")
   call(["rm", f])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished scale down." + bcolors.ENDC)
-  print("")
 
 def machines_list(arg_vars, project_root, hint=True):
   if hint:

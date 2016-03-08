@@ -70,13 +70,14 @@ fns = {("init",): init_command.init,
        ("service", "remove"): service_command.service_remove,
        ("service", "describe"): service_command.service_describe,
        ("cluster", "new"): cluster_command.cluster_new,
+       ("cluster", "teardown"): cluster_command.cluster_teardown,
        ("cluster", "describe"): cluster_command.cluster_describe,
        ("cluster", "provision"): cluster_command.cluster_provision,
        ("machines", "new"): machines_command.machines_new,
        ("machines", "list"): machines_command.machines_list,
        ("machines", "cache"): machines_command.machines_cache,
        ("machines", "scale"): machines_command.machines_scale,
-       ("machines", "remove"): machines_command.machines_remove,
+       ("machines", "teardown"): machines_command.machines_teardown,
        ("machines", "describe"): machines_command.machines_describe}
 
 def main():

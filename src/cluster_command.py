@@ -12,6 +12,7 @@ from os import listdir, walk, chdir
 from subprocess import call
 from colors import bcolors
 
+from machines_command import machines_teardown
 from ansible import invoke_ansible, refresh_provisioning_playbook
 
 def cluster_new(arg_vars, project_root):
@@ -41,6 +42,23 @@ def cluster_describe(arg_vars, project_root):
     t.add_row([c])
 
   print t
+
+def cluster_teardown(arg_vars, project_root):
+  print(bcolors.OKBLUE + "> Tearing down all machine profiles ... " + bcolors.ENDC)
+  print("")
+
+  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
+  files = [f for f in listdir(path) if isfile(join(path, f))]
+
+  for f in files:
+    with open(path + "/" + f, 'r') as stream:
+      content = yaml.load(stream)
+      arg_vars['profile_id'] = content['profile_id']
+      machines_teardown(arg_vars, project_root)
+
+  print(bcolors.OKBLUE + "> Tearing down the VPC ... " + bcolors.ENDC)
+  invoke_ansible(arg_vars, project_root, "cluster_remove.yml")
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
 
 def cluster_provision(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Invoking Ansible and streaming its output ..." + bcolors.ENDC)
