@@ -10,50 +10,55 @@ from mako.template import Template
 from os.path import isfile, join, expanduser, exists
 from os import listdir, walk
 from subprocess import call
-from colors import bcolors
 
+from colors import bcolors
+from util import verify_cluster_exists, verify_profile_exists
 from ansible import invoke_ansible, refresh_provisioning_playbook
 
 def machines_describe(arg_vars, project_root):
   path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
-  files = [f for f in listdir(path) if isfile(join(path, f))]
-  t = PrettyTable(['Profile ID', 'Size', 'Services', 'Desired Count'])
-  t.align = "l"
-  t.align["Desired Count"] = "c"
-  for f in files:
-    with open(path + "/" + f, 'r') as stream:
-      content = yaml.load(stream)
-      t.add_row([content['profile_id'], content['ec2_instance_type'],
-                 ", ".join(content['machine_services']),
-                 content['n_machine_instances']])
-  print t
+  if exists(path):
+    files = [f for f in listdir(path) if isfile(join(path, f))]
+    t = PrettyTable(['Profile ID', 'Size', 'Services', 'Desired Count'])
+    t.align = "l"
+    t.align["Desired Count"] = "c"
+    for f in files:
+      with open(path + "/" + f, 'r') as stream:
+        content = yaml.load(stream)
+        t.add_row([content['profile_id'], content['ec2_instance_type'],
+                   ", ".join(content['machine_services']),
+                   content['n_machine_instances']])
+    print t
+  else:
+    print(bcolors.OKBLUE + "> No machine profiles were found. " + bcolors.ENDC)
 
 def machines_teardown(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Removing machines provisioned with profile id " + arg_vars['profile_id'] + " ..." + bcolors.ENDC)
   f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
 
-  with open(f, "r") as stream:
-    content = yaml.load(stream)
-    content['n_machine_instances'] = 0
+  if verify_profile_exists(arg_vars, project_root):
+    with open(f, "r") as stream:
+      content = yaml.load(stream)
+      content['n_machine_instances'] = 0
 
-  with open(f, "w") as stream:
-    stream.write(yaml.dump(content))
+    with open(f, "w") as stream:
+      stream.write(yaml.dump(content))
 
-  tpl = Template(resource_string(__name__, "ansible_template/machines_remove.yml"))
-  with open(project_root + "/ansible/machines_remove.yml", "w") as text_file:
-    text_file.write(tpl.render(profile=arg_vars['profile_id']))
+    tpl = Template(resource_string(__name__, "ansible_template/machines_remove.yml"))
+    with open(project_root + "/ansible/machines_remove.yml", "w") as text_file:
+      text_file.write(tpl.render(profile=arg_vars['profile_id']))
 
-  print(bcolors.OKBLUE + "> Scaling down instances. Streaming Ansible output ... " + bcolors.ENDC)
-  invoke_ansible(arg_vars, project_root, "machines_remove.yml")
-  call(["rm", f])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished scale down." + bcolors.ENDC)
+    print(bcolors.OKBLUE + "> Scaling down instances. Streaming Ansible output ... " + bcolors.ENDC)
+    invoke_ansible(arg_vars, project_root, "machines_remove.yml")
+    call(["rm", f])
+    print(bcolors.OKBLUE + bcolors.BOLD + "> Finished scale down." + bcolors.ENDC)
 
 def machines_list(arg_vars, project_root, hint=True):
   if hint:
     print(bcolors.OKBLUE + "> Hint: Displaying cached contents. Refresh status with: engraver machines cache" + bcolors.ENDC)
     print("")
-  path = project_root + "/.engraver/clusters/" + arg_vars['cluster_id'] + ".json"
 
+  path = project_root + "/.engraver/clusters/" + arg_vars['cluster_id'] + ".json"
   if exists(path):
     t = PrettyTable(['', 'ID', 'Profile', 'Public DNS Name', 'Private IP'])
     t.align = "l"
@@ -63,7 +68,7 @@ def machines_list(arg_vars, project_root, hint=True):
         t.add_row([index + 1, m.get('id'), m.get('tags').get('ProfileId'), m.get('public_dns_name'), m.get('private_ip_address')])
     print t
   else:
-    print(bcolors.OKBLUE + "> No cached contents found." + bcolors.ENDC)
+    print(bcolors.FAIL + "> No cached contents found." + bcolors.ENDC)
 
 def machines_cache(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Updating local cache of cluster machines. Streaming Ansible output ..." + bcolors.ENDC)
@@ -75,10 +80,10 @@ def machines_cache(arg_vars, project_root):
   aws_key_name = config.get('aws', 'aws_key_name', 0)
   pem_file_path = config.get('aws', 'pem_file_name', 0)
 
-  invoke_ansible(arg_vars, project_root, "refresh_cache.yml")
-
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating local cache. Displaying cluster: " + bcolors.ENDC)
-  machines_list(arg_vars, project_root, hint=False)
+  if(verify_cluster_exists(arg_vars, project_root)):
+    invoke_ansible(arg_vars, project_root, "refresh_cache.yml")
+    print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating local cache. Displaying cluster: " + bcolors.ENDC)
+    machines_list(arg_vars, project_root, hint=False)
 
 def machines_scale(arg_vars, project_root):
   f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
