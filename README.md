@@ -43,7 +43,7 @@ If you disagree with our set up of Ansible out of the box, that's fine. If you k
 
 ### User Guide
 
-This a short guide that explains each major piece of Engraver. You can skip down to the bottom of this README for the specification of every command, switch, and option in Engraver.
+This a short guide that explains each major piece of Engraver by walking through an example. You can skip down to the bottom of this README for the specification of every command, switch, and option in Engraver.
 
 #### Initialization
 
@@ -54,6 +54,16 @@ $ engraver init hello-world
 ```
 
 The `init` command will invoke Leiningen and create a new Onyx application template. It will clone some other repositories from the OnyxPlatform GitHub account. The extra clones are used for standing up your cluster in a cloud environment.
+
+#### Account Configuration
+
+Before we *really* get rolling, you'll need to tell Engraver about yourself. In this guide, we'll use AWS:
+
+```
+$ engraver configure aws
+```
+
+Fill out the prompts to authenticate yourself with AWS.
 
 #### Cluster Management
 
@@ -128,11 +138,87 @@ $ engraver machines list --cluster-id dev
 +--+----+---------+-----------------+------------+
 ```
 
-If you want to have a look for yourself, check out `.engraver/clusters/dev.json` to see the full machine cache.
+After we provision machines, you can check out `.engraver/clusters/dev.json` to see the full machine cache.
 
 #### Provisioning
 
+Time to provision our cluster in the cloud. Run the following command to spin up our 3-node cluster:
+
+```
+$ engraver cluster provision --cluster-id dev
+```
+
+You'll see a fair amount of Ansible output. When you provision in AWS, Ansible will:
+
+- Create a Virtual Private Cloud (VPC)
+- Create EC2 instances as describe by each of your machine profiles
+- Install the requested services
+
+Running provision is *idempontent*. You can run it again safely and it will update your existing cluster to your specification, not make a brand new one.
+
+Once provisioning finishes, we can check our local cache, which has been automatically refreshed:
+
+```
+$ engraver machines list --cluster-id dev
+> Hint: Displaying cached contents. Refresh status with: engraver machines cache
+
++---+------------+---------+-------------------------------------------+-------------+
+|   | ID         | Profile | Public DNS Name                           | Private IP  |
++---+------------+---------+-------------------------------------------+-------------+
+| 1 | i-171be88c | default | ec2-52-90-230-216.compute-1.amazonaws.com | 172.0.1.196 |
+| 2 | i-161be88d | default | ec2-52-201-249-47.compute-1.amazonaws.com | 172.0.1.195 |
+| 3 | i-141be88f | default | ec2-54-175-197-45.compute-1.amazonaws.com | 172.0.1.197 |
++---+------------+---------+-------------------------------------------+-------------+
+```
+
 #### Log Streaming
+
+With our cluster up and running, it'd be nice to know what the heck is going on! Engraver can automatically stream logs from Docker containers onto your nachine. Our machine profile asked for 3 machines to all run ZooKeeper, so let's take a look:
+
+```
+$ engraver logs --cluster-id dev --service zookeeper ec2-52-90-230-216.compute-1.amazonaws.com
+```
+
+A stream of log contents will be played into your terminal. You can abort out of it using your OS-specific key combination. Note that log streaming will only work for services that declare a `container_name` var in the default values file of their Ansible playbook.
+
+#### Autoscaling
+
+Is 3 machines not enough? Maybe it's too many? Let's scale down 1 node:
+
+```
+$ engraver machines scale --cluster-id dev --profile-id default 1
+> Updated local Ansible playbook. Now run: engraver cluster provision
+```
+
+We've updated our profile. Let's verify:
+
+```
+$ engraver machines describe --cluster-id dev
++------------+----------+-----------------------------+---------------+
+| Profile ID | Size     | Services                    | Desired Count |
++------------+----------+-----------------------------+---------------+
+| default    | c4.large | zookeeper, bookkeeper, onyx |       1       |
++------------+----------+-----------------------------+---------------+
+```
+
+Desired count is `1`. Let's make it happen by provisioning!
+
+```
+$ engraver cluster provision --cluster-id dev
+```
+
+We can see that provisioning has spun our cluster down to 1 machine:
+
+```
+$ engraver machines list --cluster-id dev
+> Hint: Displaying cached contents. Refresh status with: engraver machines cache
+
++---+------------+---------+-------------------------------------------+-------------+
+|   | ID         | Profile | Public DNS Name                           | Private IP  |
++---+------------+---------+-------------------------------------------+-------------+
+| 1 | i-171be88c | default | ec2-52-90-230-216.compute-1.amazonaws.com | 172.0.1.196 |
++---+------------+---------+-------------------------------------------+-------------+
+```
 
 #### Application Deployment
 

@@ -20,7 +20,7 @@ def stream_logs(arg_vars, project_root):
       with open(f + "/defaults/main.yml", "r") as stream:
         content = yaml.load(stream)
         if content.get('container_name'):
-          container = ['container_name']
+          container = content['container_name']
           call(["ssh", "-t", "-i", pem_file_path, "ubuntu@" + arg_vars['host'], "docker logs -f " + container])
         else:
           print(bcolors.FAIL + "> Service does not define container_name in defaults/main.yml. Cannot stream logs." + bcolors.ENDC)
