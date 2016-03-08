@@ -24,7 +24,9 @@ def cluster_new(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/group_vars/all.yml"))
 
   with open((project_root + "/ansible/group_vars/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(cluster_id=arg_vars['cluster_id']))
+    text_file.write(tpl.render(cluster_id=arg_vars['cluster_id'],
+                               aws_region=arg_vars['aws_region'],
+                               aws_az=arg_vars['aws_az']))
 
   refresh_provisioning_playbook(arg_vars, project_root)
 

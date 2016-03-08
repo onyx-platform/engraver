@@ -101,6 +101,18 @@
                             "choices" : ["aws"],
                             "default" : "aws",
                             "help" : "The clouder provider to deploy the cluster into"
+                        },
+                        "aws-region" : {
+                            "long" : "--aws-region",
+                            "required" : false,
+                            "default" : "us-east-1",
+                            "help" : "The AWS region to provision the cluster in"
+                        },
+                        "aws-az" : {
+                            "long" : "--aws-az",
+                            "required" : false,
+                            "default" : "us-east-1b",
+                            "help" : "The AWS Availability Zone to provision the cluster in"
                         }
                     }
                 },
