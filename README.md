@@ -43,7 +43,7 @@ If you disagree with our set up of Ansible out of the box, that's fine. If you k
 
 ### User Guide
 
-This a short guide that explains each major piece of Engraver by walking through an example. You can skip down to the bottom of this README for the specification of every command, switch, and option in Engraver.
+This a short guide that explains each major piece of Engraver by walking through an example.
 
 #### Initialization
 
@@ -247,8 +247,6 @@ $ engraver cluster teardown --cluster-id dev
 This will delete all EC2 instances in your VPC, then delete the VPC entirely.
 
 #### Generated Files
-
-### Full Spec
 
 ### License
 
