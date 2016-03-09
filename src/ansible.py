@@ -45,14 +45,19 @@ def refresh_provisioning_playbook(arg_vars, project_root):
   path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
 
-  profiles = {}
+  services = {}
+  profiles = []
   for f in profile_files:
     with open((path + "/"  + f), "r") as handle:
       content = yaml.load(handle)
-      profiles[content['profile_id']] = {'machine_services': content['machine_services']}
+      profiles.append(content['profile_id'])
+      for s in content['machine_services']:
+        rets = services.get(s, [])
+        rets.append(content['profile_id'])
+        services[s] = rets
 
   with open((project_root + "/ansible/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(profiles=profiles))
+    text_file.write(tpl.render(services=services, profiles=profiles))
 
 def refresh_deployment_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/deploy.yml"))
