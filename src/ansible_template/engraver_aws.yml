@@ -57,6 +57,9 @@
     - "group_vars/{{ onyx_cluster_id }}.yml"
 % for p in services.get(s):
     - "vars/cluster_vars/{{ onyx_cluster_id }}/machine_profiles/${ p }_profile.yml"
+% for dep in service_graph.get(s):
+    - "roles/${ dep }/defaults/main.yml"
+% endfor
 % endfor
   roles:
     - ${ s }

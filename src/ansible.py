@@ -65,7 +65,10 @@ def refresh_provisioning_playbook(arg_vars, project_root):
 
   service_seq = toposort_flatten(service_graph)
   with open((project_root + "/ansible/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(services=services, profiles=profiles, service_seq=service_seq))
+    text_file.write(tpl.render(services=services,
+                               profiles=profiles,
+                               service_seq=service_seq,
+                               service_graph=service_graph))
 
 def refresh_deployment_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/deploy.yml"))
