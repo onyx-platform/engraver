@@ -62,6 +62,13 @@ def cluster_teardown(arg_vars, project_root):
       machines_teardown(arg_vars, project_root)
 
   print(bcolors.OKBLUE + "> Tearing down the VPC ... " + bcolors.ENDC)
+
+  tpl = Template(resource_string(__name__, "ansible_template/cluster_remove.yml"))
+  with open(project_root + "/ansible/cluster_remove.yml", "w") as text_file:
+    path = project_root + "/ansible/roles"
+    services = next(walk(path))[1]
+    text_file.write(tpl.render(services=services))
+
   invoke_ansible(arg_vars, project_root, "cluster_remove.yml")
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
 

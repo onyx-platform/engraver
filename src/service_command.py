@@ -24,12 +24,11 @@ def service_pull(arg_vars, project_root):
 
 def service_describe(arg_vars, project_root):
   path = project_root + "/ansible/roles"
-  print(path)
-  clusters = next(walk(path))[1]
+  services = next(walk(path))[1]
   t = PrettyTable(['Service Name'])
   t.align = "l"
 
-  for c in clusters:
-    t.add_row([c])
+  for s in services:
+    t.add_row([s])
 
   print t

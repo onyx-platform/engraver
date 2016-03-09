@@ -26,13 +26,13 @@ def init(arg_vars, project_root):
   call(["ansible-galaxy", "init", ansible_dir])
   call(["cp", resource_filename(__name__, "ansible_template/ansible.cfg"), ansible_dir])
   call(["cp", resource_filename(__name__, "ansible_template/refresh_cache.yml"), ansible_dir])
-  call(["cp", resource_filename(__name__, "ansible_template/cluster_remove.yml"), ansible_dir])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Ansible." + bcolors.ENDC)
   print("")
 
   print(bcolors.OKBLUE + "> Updating .gitignore for Engraver files ..." + bcolors.HEADER)
   call("echo '.engraver/clusters/*' >> " + app_name + "/.gitignore", shell=True)
   call("echo 'ansible/machines_remove.yml' >> " + app_name + "/.gitignore", shell=True)
+  call("echo 'ansible/cluster_remove.yml' >> " + app_name + "/.gitignore", shell=True)
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating .gitignore." + bcolors.ENDC)
   print("")
   
