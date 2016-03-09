@@ -49,13 +49,13 @@
   roles:
     - aws
 
-% for s, ps in services.iteritems():
+% for s in service_seq:
 - hosts: ${ s }
   remote_user: "{{ remote_user }}"
   become_method: sudo
   vars_files:
     - "group_vars/{{ onyx_cluster_id }}.yml"
-% for p in ps:
+% for p in services.get(s):
     - "vars/cluster_vars/{{ onyx_cluster_id }}/machine_profiles/${ p }_profile.yml"
 % endfor
   roles:

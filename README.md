@@ -27,7 +27,6 @@ To run Engraver, you will need:
 - Python >= 2.7.8
 - Java 8
 - [Leiningen](http://leiningen.org/)
-- [Boto](https://github.com/boto/boto#installation)
 - [Ansible](http://docs.ansible.com/ansible/intro_installation.html#latest-releases-via-pip)
 - [Docker](https://docs.docker.com/engine/installation/)
 - [An AWS account](http://aws.amazon.com/)

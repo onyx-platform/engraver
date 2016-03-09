@@ -8,6 +8,7 @@ from mako.template import Template
 from os.path import isfile, join, expanduser, exists
 from os import chdir, listdir
 from subprocess import call
+from toposort import toposort_flatten
 
 def form_env_vars(extras):
   result = []
@@ -46,6 +47,7 @@ def refresh_provisioning_playbook(arg_vars, project_root):
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
 
   services = {}
+  service_graph = {}
   profiles = []
   for f in profile_files:
     with open((path + "/"  + f), "r") as handle:
@@ -56,8 +58,14 @@ def refresh_provisioning_playbook(arg_vars, project_root):
         rets.append(content['profile_id'])
         services[s] = rets
 
+  for s in services.keys():
+    with open((project_root + "/ansible/roles/" + s + "/defaults/main.yml"), "r") as text_file:
+      content = yaml.load(text_file)
+      service_graph[s] = set(content.get('service_dependencies', {}))
+
+  service_seq = toposort_flatten(service_graph)
   with open((project_root + "/ansible/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(services=services, profiles=profiles))
+    text_file.write(tpl.render(services=services, profiles=profiles, service_seq=service_seq))
 
 def refresh_deployment_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/deploy.yml"))
