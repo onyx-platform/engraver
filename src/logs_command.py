@@ -13,6 +13,7 @@ def stream_logs(arg_vars, project_root):
   engraver_profile = expanduser("~") + "/.engraver"
   config.read(engraver_profile)
   pem_file_path = config.get('aws', 'pem_file_name', 0)
+  remote_user = config.get('aws', 'remote_user', 0)
 
   f = project_root + "/ansible/roles/" + arg_vars['service']
   if verify_cluster_exists(arg_vars, project_root):
@@ -21,7 +22,7 @@ def stream_logs(arg_vars, project_root):
         content = yaml.load(stream)
         if content.get('container_name'):
           container = content['container_name']
-          call(["ssh", "-t", "-i", pem_file_path, "ubuntu@" + arg_vars['host'], "docker logs -f " + container])
+          call(["ssh", "-t", "-i", pem_file_path, remote_user + "@" + arg_vars['host'], "docker logs -f " + container])
         else:
           print(bcolors.FAIL + "> Service does not define container_name in defaults/main.yml. Cannot stream logs." + bcolors.ENDC)
     else:

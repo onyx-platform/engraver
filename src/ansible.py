@@ -27,18 +27,20 @@ def invoke_ansible(arg_vars, project_root, playbook, extras = {}):
   aws_secret_key = config.get('aws', 'aws_secret_key', 0)
   aws_key_name = config.get('aws', 'aws_key_name', 0)
   pem_file_path = config.get('aws', 'pem_file_name', 0)
+  remote_user = config.get('aws', 'remote_user', 0)
 
   chdir(project_root + "/ansible")
 
   pre = ["ansible-playbook", "--private-key", pem_file_path,
-         "-i", ",", "-e", "remote_user='ubuntu'",
+         "-i", ",",
+         "-e", ("remote_user=" + remote_user),
          "-e", ("onyx_cluster_id=" + arg_vars['cluster_id']),
          "-e", ("aws_key_name=" + aws_key_name),
          "-e", ("aws_access_key=" + aws_access_key),
          "-e", ("aws_secret_key=" + aws_secret_key),
          "-e", ("engraver_root=" + project_root)]
 
-  raw = shlex.split(arg_vars.get('ansible', []))
+  raw = shlex.split(arg_vars.get('ansible') or "")
   post = [project_root + "/ansible/" + playbook]
   call(pre + raw + form_env_vars(extras) + post)
 
