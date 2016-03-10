@@ -65,3 +65,4 @@
     - ${ s }
 
 % endfor
+- include: ${ cluster_id }_post.yml
