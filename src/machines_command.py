@@ -30,7 +30,7 @@ def machines_describe(arg_vars, project_root):
                    content['n_machine_instances']])
     print t
   else:
-    print(bcolors.OKBLUE + "> No machine profiles were found. " + bcolors.ENDC)
+    print(bcolors.OKBLUE + "> No machine profiles were found for this cluster." + bcolors.ENDC)
 
 def machines_teardown(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Removing machines provisioned with profile id " + arg_vars['profile_id'] + " ..." + bcolors.ENDC)

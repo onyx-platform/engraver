@@ -70,6 +70,8 @@ def cluster_teardown(arg_vars, project_root):
     text_file.write(tpl.render(services=services))
 
   invoke_ansible(arg_vars, project_root, "cluster_remove.yml")
+  call(["rm", (project_root + "/ansible/group_vars/" + arg_vars['cluster_id'] + ".yml")])
+  call(["rm", "-r", (project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'])])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
 
 def cluster_provision(arg_vars, project_root):

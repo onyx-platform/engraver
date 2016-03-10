@@ -14,6 +14,12 @@
                 "required" : true,
                 "help" : "The :onyx/tenancy-id to deploy this application into"
             }
+        },
+        "ansible" : {
+            "args" : {
+                "long" : "--ansible",
+                "help" : "Arbitrary string to pass to the ansible-playbook command"
+            }
         }
     },
     "commands" : {
@@ -93,7 +99,7 @@
             "commands" : {
                 "new" : {
                     "help" : "Creates configuration management scripts for a new Onyx cluster",
-                    "shared-parsers" : [ "cluster-id" ],
+                    "shared-parsers" : [ "cluster-id", "ansible" ],
                     "args" : {
                         "provider" : {
                             "long" : "--provider",
@@ -121,11 +127,11 @@
                 },
                 "provision" : {
                     "help" : "Provisions this Onyx cluster in the target environment",
-                    "shared-parsers" : [ "cluster-id" ]
+                    "shared-parsers" : [ "cluster-id", "ansible" ]
                 },
                 "teardown" : {
                     "help" : "Destroys all provisioned infrastructure for this cluster and removes it from configuration",
-                    "shared-parsers" : [ "cluster-id" ]
+                    "shared-parsers" : [ "cluster-id", "ansible" ]
                 }
             }
         },
@@ -166,7 +172,7 @@
                 },
                 "cache" : {
                     "help" : "Updates local cache of machines for this cluster",
-                    "shared-parsers" : [ "cluster-id" ]
+                    "shared-parsers" : [ "cluster-id", "ansible" ]
                 },
                 "scale" : {
                     "help" : "Scales this machine set up or down to a number of instances",
@@ -192,14 +198,14 @@
                             "help" : "The profile ID of this machine set"
                         }
                     },
-                    "shared-parsers" : [ "cluster-id" ]
+                    "shared-parsers" : [ "cluster-id", "ansible" ]
                 }
             }
         },
 
         "deploy" : {
             "help" : "Deploy Onyx peer applications to a cluster",
-            "shared-parsers" : [ "cluster-id", "tenancy-id" ],
+            "shared-parsers" : [ "cluster-id", "tenancy-id", "ansible" ],
             "args" : {
                 "via" : {
                     "long" : "--via",

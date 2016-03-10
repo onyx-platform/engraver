@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import shlex
 import yaml
 
 from pkg_resources import resource_string
@@ -37,9 +38,9 @@ def invoke_ansible(arg_vars, project_root, playbook, extras = {}):
          "-e", ("aws_secret_key=" + aws_secret_key),
          "-e", ("engraver_root=" + project_root)]
 
+  raw = shlex.split(arg_vars.get('ansible', []))
   post = [project_root + "/ansible/" + playbook]
-
-  call(pre + form_env_vars(extras) + post)
+  call(pre + raw + form_env_vars(extras) + post)
 
 def refresh_provisioning_playbook(arg_vars, project_root):
   tpl = Template(resource_string(__name__, "ansible_template/engraver_aws.yml"))
