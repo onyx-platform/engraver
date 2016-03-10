@@ -6,7 +6,8 @@ Engraver is command-line tool for managing and deploying Onyx clusters.
 
 - A full application template, preloaded with best practices and design idioms
 - Automatic cluster provisioning to a cloud environment
-- Secure, highly available configurations out of the box
+- Network security locked down by default
+- High availability configured by default
 - Containerized, preconfigured images of common services
 - Log streaming to the developer machine
 - Multi-tenancy as a first class concept
