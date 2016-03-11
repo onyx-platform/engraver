@@ -238,11 +238,25 @@
             "commands" : {
                 "submit" : {
                     "help" : "Submits Onyx jobs to a cluster",
-                    "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+                    "shared-parsers" : [ "cluster-id", "tenancy-id" ],
+                    "args" : {
+                        "job-name" : {
+                            "long" : "--job-name",
+                            "required" : true,
+                            "help" : "The name of the Onyx job to submit"
+                        }
+                    }
                 },
                 "kill" : {
                     "help" : "Kills this job on the cluster",
-                    "shared-parsers" : [ "cluster-id", "tenancy-id" ]
+                    "shared-parsers" : [ "cluster-id", "tenancy-id" ],
+                    "args" : {
+                        "job-id" : {
+                            "long" : "--job-id",
+                            "required" : true,
+                            "help" : "The ID of the Onyx job to kill"
+                        }
+                    }
                 }
             }
         }

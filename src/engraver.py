@@ -10,6 +10,7 @@ import machines_command
 import service_command
 import deploy_command
 import logs_command
+import job_command
 
 from pkg_resources import resource_string
 from os import listdir, walk, getcwd
@@ -64,6 +65,8 @@ def attach_subparsers(parent_parser, shared_parsers, body, level):
 fns = {("init",): init_command.init,
        ("logs",): logs_command.stream_logs,
        ("deploy",): deploy_command.deploy,
+       ("job", "submit"): job_command.job_submit,
+       ("job", "kill"): job_command.job_kill,
        ("configure", "aws"): configure_command.configure_aws,
        ("service", "new"): service_command.service_new,
        ("service", "pull"): service_command.service_pull,

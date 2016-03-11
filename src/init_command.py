@@ -38,6 +38,8 @@ def init(arg_vars, project_root):
   call("echo '.engraver/clusters/*' >> " + app_name + "/.gitignore", shell=True)
   call("echo 'ansible/machines_remove.yml' >> " + app_name + "/.gitignore", shell=True)
   call("echo 'ansible/cluster_remove.yml' >> " + app_name + "/.gitignore", shell=True)
+  call("echo 'ansible/job_submit.yml' >> " + app_name + "/.gitignore", shell=True)
+  call("echo 'ansible/job_kill.yml' >> " + app_name + "/.gitignore", shell=True)
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating .gitignore." + bcolors.ENDC)
   print("")
   
