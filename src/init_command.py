@@ -11,9 +11,14 @@ def init(arg_vars, project_root):
   ansible_dir = app_name + "/ansible"
   roles_dir = ansible_dir + "/roles"
 
-  print(bcolors.OKBLUE + "> Invoking Leiningen and streaming its output ..." + bcolors.HEADER)
-  call(["lein", "new", "onyx-app", app_name, "+docker"])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Leiningen." + bcolors.ENDC)
+  if arg_vars.get('example_app') == 'beginner':
+    print(bcolors.OKBLUE + "> Cloning beginner playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+    call(["git", "clone", "https://github.com/onyx-platform/engraver-beginner-example.git", app_name])
+    print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning example." + bcolors.ENDC)
+  else:
+    print(bcolors.OKBLUE + "> Invoking Leiningen and streaming its output ..." + bcolors.HEADER)
+    call(["lein", "new", "onyx-app", app_name, "+docker"])
+    print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Leiningen." + bcolors.ENDC)
   print("")
 
   print(bcolors.OKBLUE + "> Initializing .engraver folders ..." + bcolors.ENDC)
@@ -36,27 +41,27 @@ def init(arg_vars, project_root):
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating .gitignore." + bcolors.ENDC)
   print("")
   
-  print(bcolors.OKBLUE + "> Cloning Ansible AWS playbook from Git. Streaming Git output ..." + bcolors.HEADER)
+  print(bcolors.OKBLUE + "> Cloning Ansible AWS playbook via Git. Streaming Git output ..." + bcolors.HEADER)
   call(["git", "clone", "https://github.com/onyx-platform/engraver-aws.git", roles_dir + "/aws"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible Docker playbook from Git. Streaming Git output ..." + bcolors.HEADER)
+  print(bcolors.OKBLUE + "> Cloning Ansible Docker playbook via Git. Streaming Git output ..." + bcolors.HEADER)
   call(["git", "clone", "https://github.com/onyx-platform/engraver-docker.git", roles_dir + "/docker"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible ZooKeeper playbook from Git. Streaming Git output ..." + bcolors.HEADER)
+  print(bcolors.OKBLUE + "> Cloning Ansible ZooKeeper playbook via Git. Streaming Git output ..." + bcolors.HEADER)
   call(["git", "clone", "https://github.com/onyx-platform/engraver-zookeeper.git", roles_dir + "/zookeeper"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible BookKeeper playbook from Git. Streaming Git output ..." + bcolors.HEADER)
+  print(bcolors.OKBLUE + "> Cloning Ansible BookKeeper playbook via Git. Streaming Git output ..." + bcolors.HEADER)
   call(["git", "clone", "https://github.com/onyx-platform/engraver-bookkeeper.git", roles_dir + "/bookkeeper"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible Onyx playbook from Git. Streaming Git output ..." + bcolors.HEADER)
+  print(bcolors.OKBLUE + "> Cloning Ansible Onyx playbook via Git. Streaming Git output ..." + bcolors.HEADER)
   call(["git", "clone", "https://github.com/onyx-platform/engraver-onyx.git", roles_dir + "/onyx"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")

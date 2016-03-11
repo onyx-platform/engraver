@@ -29,6 +29,11 @@
                 "app-name" : {
                     "long" : "app-name",
                     "help" : "The name your Engraver application"
+                },
+                "example-app" : {
+                    "long" : "--example-app",
+                    "choices" : [ "beginner" ],
+                    "help" : "The name of preloaded example application"
                 }
             }
         },
