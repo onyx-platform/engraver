@@ -61,6 +61,11 @@ def init(arg_vars, project_root):
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
   print("")
 
+  print(bcolors.OKBLUE + "> Cloning Ansible Kafka playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+  call(["git", "clone", "https://github.com/onyx-platform/engraver-kafka.git", roles_dir + "/kafka"])
+  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print("")
+
   print(bcolors.OKBLUE + "> Cloning Ansible Onyx playbook via Git. Streaming Git output ..." + bcolors.HEADER)
   call(["git", "clone", "https://github.com/onyx-platform/engraver-onyx.git", roles_dir + "/onyx"])
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)

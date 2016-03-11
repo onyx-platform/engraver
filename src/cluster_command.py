@@ -79,6 +79,7 @@ def cluster_teardown(arg_vars, project_root):
 
 def cluster_provision(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Invoking Ansible and streaming its output ..." + bcolors.ENDC)
+  refresh_provisioning_playbook(arg_vars, project_root)
   invoke_ansible(arg_vars, project_root, arg_vars['cluster_id'] + ".yml")
   invoke_ansible(arg_vars, project_root, arg_vars['cluster_id'] + "_post.yml")
   print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
