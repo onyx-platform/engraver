@@ -35,6 +35,10 @@ def cluster_path(project_root, cluster_id):
   base = "{0}/ansible/vars/cluster_vars/{1}"
   return base.format(project_root, cluster_id)
 
+def service_path(project_root, service):
+  base = "{0}/ansible/roles/{1}"
+  return base.format(project_root, service)
+
 def machine_profile_file(project_root, cluster_id, profile_id):
   base = "{0}/{2}_profile.yml"
   profiles_path = machine_profiles_path(project_root, cluster_id)

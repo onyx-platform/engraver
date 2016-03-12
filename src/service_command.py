@@ -4,26 +4,26 @@ import yaml
 
 from prettytable import PrettyTable
 from subprocess import call
-from colors import bcolors
+from colors import bcolors, print_ok, print_ok_pending, print_done
 from os import listdir, walk, chdir
 from os.path import exists
 
 def service_new(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Invoking ansible-galaxy. Streaming its output ..." + bcolors.ENDC)
-  role = project_root + "/ansible/roles/" + arg_vars['service-name']
+  print_ok_pending("Invoking ansible-galaxy. Streaming its output")
+  role = util.service_path(project_root, arg_vars['service-name'])
   call(["ansible-galaxy", "init", role])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Service role created. Edit at: " + role + bcolors.ENDC)
+  print_done("Service role created. Edit at: " + role)
 
 def service_remove(arg_vars, project_root):
-  role = project_root + "/ansible/roles/" + arg_vars['service-name']
+  role = util.service_path(project_root, arg_vars['service-name'])
   call(['rm', '-rf', role])
-  print(bcolors.OKBLUE + "> Deleted service: " + arg_vars['service-name'] + bcolors.ENDC)
+  print_ok("Deleted service: " + arg_vars['service-name'])
 
 def service_pull(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Invoking Git. Streaming its output ..." + bcolors.ENDC)
-  role = project_root + "/ansible/roles/" + arg_vars['service-name']
+  print_ok_pending("Invoking Git. Streaming its output")
+  role = util.service_path(project_root, arg_vars['service-name'])
   call(["git", "clone", arg_vars['service-repo'], role])
-  print(bcolors.OKBLUE + "> Install service at: " + role + bcolors.ENDC)
+  print_ok("Install service at: " + role)
 
 def service_describe(arg_vars, project_root):
   path = project_root + "/ansible/roles"
