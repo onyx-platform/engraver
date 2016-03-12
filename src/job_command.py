@@ -3,7 +3,7 @@
 from colors import bcolors
 from subprocess import call
 
-from ansible import refresh_submit_playbook, refresh_kill_playbook
+from ansible import refresh_submit_playbook, refresh_kill_playbook, invoke_ansible
 
 def job_submit(arg_vars, project_root):
   print(bcolors.OKBLUE + "> Invoking Ansible and streaming its output ..." + bcolors.ENDC)
