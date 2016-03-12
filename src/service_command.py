@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import yaml
+import util
 
 from prettytable import PrettyTable
 from subprocess import call
