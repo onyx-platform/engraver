@@ -15,6 +15,18 @@ def post_provisioning_playbook(cluster_id):
 def cluster_remove_playbook():
   return "cluster_remove.yml"
 
+def refresh_cache_playbook():
+  return "refresh_cache.yml"
+
+def deploy_playbook():
+  return "deploy.yml"
+
+def job_submit_playbook():
+  return "job_kill.yml"
+
+def job_kill_playbook():
+  return "job_kill.yml"
+
 def machine_profiles_path(project_root, cluster_id):
   base = "{0}/ansible/vars/cluster_vars/{1}/machine_profiles"
   return base.format(project_root, cluster_id)
@@ -44,6 +56,18 @@ def user_post_playbook_file(project_root, cluster_id):
   base = "{0}/ansible/{1}_post.yml"
   return base.format(project_root, cluster_id)
 
+def deploy_file(project_root):
+  base = "{0}/ansible/deploy.yml"
+  return base.format(project_root)
+
+def job_submit_file(project_root):
+  base = "{0}/ansible/job_submit.yml"
+  return base.format(project_root)
+
+def job_kill_file(project_root):
+  base = "{0}/ansible/job_kill.yml"
+  return base.format(project_root)
+
 def profile_template():
   base = "ansible_template/vars/cluster_vars/machine_profiles/profile_template.yml"
   return Template(resource_string(__name__, base))
@@ -66,6 +90,18 @@ def cluster_remove_template():
 
 def user_post_playbook_template():
   base = "ansible_template/engraver_post.yml"
+  return Template(resource_filename(__name__, base))
+
+def deploy_template():
+  base = "ansible_template/deploy.yml"
+  return Template(resource_filename(__name__, base))
+
+def job_submit_template():
+  base = "ansible_template/job_submit.yml"
+  return Template(resource_filename(__name__, base))
+
+def job_kill_template():
+  base = "ansible_template/job_kill.yml"
   return Template(resource_filename(__name__, base))
 
 def verify_cluster_exists(arg_vars, project_root):

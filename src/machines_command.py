@@ -92,7 +92,7 @@ def machines_cache(arg_vars, project_root):
   pem_file_path = config.get('aws', 'pem_file_name', 0)
 
   if(verify_cluster_exists(arg_vars, project_root)):
-    invoke_ansible(arg_vars, project_root, "refresh_cache.yml")
+    invoke_ansible(arg_vars, project_root, util.refresh_cache_playbook())
     print_done("Finished updating local cache. Displaying cluster: ")
     machines_list(arg_vars, project_root, hint=False)
 

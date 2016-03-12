@@ -2,11 +2,11 @@
 
 import ConfigParser
 import yaml
+import util
 
 from os.path import expanduser, exists
 from subprocess import call
 from colors import bcolors
-from util import verify_cluster_exists
 
 def stream_logs(arg_vars, project_root):
   config = ConfigParser.ConfigParser()
@@ -17,7 +17,7 @@ def stream_logs(arg_vars, project_root):
   container_name = arg_vars['service'] + "_container_name"
 
   f = project_root + "/ansible/roles/" + arg_vars['service']
-  if verify_cluster_exists(arg_vars, project_root):
+  if util.verify_cluster_exists(arg_vars, project_root):
     if exists(f):
       with open(f + "/defaults/main.yml", "r") as stream:
         content = yaml.load(stream)

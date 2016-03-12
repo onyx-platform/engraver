@@ -3,6 +3,7 @@
 import ConfigParser
 import shlex
 import yaml
+import util
 
 from pkg_resources import resource_string
 from mako.template import Template
@@ -74,47 +75,37 @@ def refresh_provisioning_playbook(arg_vars, project_root):
                                service_seq=service_seq,
                                service_graph=service_graph))
 
-def refresh_deployment_playbook(arg_vars, project_root):
-  tpl = Template(resource_string(__name__, "ansible_template/deploy.yml"))
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
+def collect_onyx_profiles(arg_vars):
+  cluster_id = arg_vars['cluster_id']
+  path = machine_profiles_path(project_root, cluster_id)
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
-
   profiles = []
+
   for f in profile_files:
     with open((path + "/"  + f), "r") as handle:
       content = yaml.load(handle)
       if 'onyx' in content['machine_services']:
         profiles.append(content['profile_id'])
 
-  with open((project_root + "/ansible/deploy.yml"), "w") as text_file:
-    text_file.write(tpl.render(profiles=profiles))
+  return profiles
+
+def refresh_deployment_playbook(arg_vars, project_root):
+  tpl = util.deploy_template()
+  profiles = collect_onyx_profiles(arg_vars)
+
+  with open(util.deploy_file(project_root), "w") as text_file:
+    text_file.write(tpl.render(profiles = profiles))
 
 def refresh_submit_playbook(arg_vars, project_root):
-  tpl = Template(resource_string(__name__, "ansible_template/job_submit.yml"))
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
-  profile_files = [f for f in listdir(path) if isfile(join(path, f))]
+  tpl = util.job_submit_template()
+  profiles = collect_onyx_profiles(arg_vars)
 
-  profiles = []
-  for f in profile_files:
-    with open((path + "/"  + f), "r") as handle:
-      content = yaml.load(handle)
-      if 'onyx' in content['machine_services']:
-        profiles.append(content['profile_id'])
-
-  with open((project_root + "/ansible/job_submit.yml"), "w") as text_file:
-    text_file.write(tpl.render(profiles=profiles))
+  with open(util.job_submit_file(project_root), "w") as handle:
+    handle.write(tpl.render(profiles=profiles))
 
 def refresh_kill_playbook(arg_vars, project_root):
-  tpl = Template(resource_string(__name__, "ansible_template/job_kill.yml"))
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
-  profile_files = [f for f in listdir(path) if isfile(join(path, f))]
+  tpl = util.job_kill_template()
+  profiles = collect_onyx_profiles(arg_vars)
 
-  profiles = []
-  for f in profile_files:
-    with open((path + "/"  + f), "r") as handle:
-      content = yaml.load(handle)
-      if 'onyx' in content['machine_services']:
-        profiles.append(content['profile_id'])
-
-  with open((project_root + "/ansible/job_kill.yml"), "w") as text_file:
-    text_file.write(tpl.render(profiles=profiles))
+  with open(util.job_kill_file(project_root), "w") as handle:
+    hansle.write(tpl.render(profiles=profiles))
