@@ -9,3 +9,20 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+def print_fail(x):
+  base = "{0}> {1}{2}"
+  print(base.format(bcolors.FAIL, x, bcolors.ENDC))
+
+def print_done(x):
+  base = "{0}{1}> {3}{4}"
+  print(base.format(bcolors.OKBLUE, bcolors.BOLD, x, bcolors.ENDC))
+
+def print_ok(x):
+  base = "{0}> {1}{2}"
+  print(base.format(bcolors.OKBLUE, x, bcolors.ENDC))
+
+def print_ok_pending(x):
+  base = "{0}> {1} ...{2}"
+  print(base.format(bcolors.OKBLUE, x, "...", bcolors.ENDC))
+

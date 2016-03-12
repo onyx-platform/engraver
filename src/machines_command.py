@@ -3,20 +3,22 @@
 import json
 import yaml
 import ConfigParser
+import util
 
 from pkg_resources import resource_filename, resource_string
 from prettytable import PrettyTable
-from mako.template import Template
 from os.path import isfile, join, expanduser, exists
-from os import listdir, walk
+from os import listdir
 from subprocess import call
 
-from colors import bcolors
+from colors import bcolors, print_done, print_fail
 from util import verify_cluster_exists, verify_profile_exists
 from ansible import invoke_ansible, refresh_provisioning_playbook
 
 def machines_describe(arg_vars, project_root):
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
+  cluster_id = arg_vars['cluster_id']
+  path = util.machine_profiles_path(project_root, cluster_id)
+
   if exists(path):
     files = [f for f in listdir(path) if isfile(join(path, f))]
     t = PrettyTable(['Profile ID', 'Size', 'Services', 'Desired Count'])
@@ -25,16 +27,21 @@ def machines_describe(arg_vars, project_root):
     for f in files:
       with open(path + "/" + f, 'r') as stream:
         content = yaml.load(stream)
-        t.add_row([content['profile_id'], content['ec2_instance_type'],
-                   ", ".join(content['machine_services']),
+        services = ", ".join(content['machine_services']),
+        t.add_row([content['profile_id'],
+                   content['ec2_instance_type'],
+                   services,
                    content['n_machine_instances']])
     print t
   else:
-    print(bcolors.OKBLUE + "> No machine profiles were found for this cluster." + bcolors.ENDC)
+    print_ok("No machine profiles were found for this cluster.")
 
 def machines_teardown(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Removing machines provisioned with profile id " + arg_vars['profile_id'] + " ..." + bcolors.ENDC)
-  f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
+  cluster_id = arg_vars['cluster_id']
+  profile_id = arg_vars['profile_id']
+  f = util.machine_profile_file(project_root, cluster_id, profile_id)
+
+  print_ok_pending("Removing machines provisioned with profile id " + profile_id)
 
   if verify_profile_exists(arg_vars, project_root):
     with open(f, "r") as stream:
@@ -44,18 +51,18 @@ def machines_teardown(arg_vars, project_root):
     with open(f, "w") as stream:
       stream.write(yaml.dump(content))
 
-    tpl = Template(resource_string(__name__, "ansible_template/machines_remove.yml"))
-    with open(project_root + "/ansible/machines_remove.yml", "w") as text_file:
-      text_file.write(tpl.render(profile=arg_vars['profile_id']))
+    tpl = util.machines_remove_template()
+    with open(util.machines_remove_file(project_root), "w") as handle:
+      handle.write(tpl.render(profile = profile_id))
 
-    print(bcolors.OKBLUE + "> Scaling down instances. Streaming Ansible output ... " + bcolors.ENDC)
+    print_ok_pending("Scaling down instances. Streaming Ansible output")
     invoke_ansible(arg_vars, project_root, "machines_remove.yml")
     call(["rm", f])
     print(bcolors.OKBLUE + bcolors.BOLD + "> Finished scale down." + bcolors.ENDC)
 
 def machines_list(arg_vars, project_root, hint=True):
   if hint:
-    print(bcolors.OKBLUE + "> Hint: Displaying cached contents. Refresh status with: engraver machines cache" + bcolors.ENDC)
+    print_ok("Hint: Displaying cached contents. Refresh status with: engraver machines cache")
     print("")
 
   path = project_root + "/.engraver/clusters/" + arg_vars['cluster_id'] + ".json"
@@ -65,13 +72,17 @@ def machines_list(arg_vars, project_root, hint=True):
     contents = open(path, 'r').read()
     machines = sorted(json.loads(contents), key=lambda k: k.get('tags').get('ProfileId'))
     for index, m in enumerate(machines):
-        t.add_row([index + 1, m.get('id'), m.get('tags').get('ProfileId'), m.get('public_dns_name'), m.get('private_ip_address')])
+        t.add_row([index + 1,
+                   m.get('id'),
+                   m.get('tags').get('ProfileId'),
+                   m.get('public_dns_name'),
+                   m.get('private_ip_address')])
     print t
   else:
-    print(bcolors.FAIL + "> No cached contents found." + bcolors.ENDC)
+    print_fail("No cached contents found.")
 
 def machines_cache(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Updating local cache of cluster machines. Streaming Ansible output ..." + bcolors.ENDC)
+  print_ok_pending("Updating local cache of cluster machines. Streaming Ansible output")
 
   config = ConfigParser.ConfigParser()
   engraver_profile = expanduser("~") + "/.engraver"
@@ -82,11 +93,14 @@ def machines_cache(arg_vars, project_root):
 
   if(verify_cluster_exists(arg_vars, project_root)):
     invoke_ansible(arg_vars, project_root, "refresh_cache.yml")
-    print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating local cache. Displaying cluster: " + bcolors.ENDC)
+    print_done("Finished updating local cache. Displaying cluster: ")
     machines_list(arg_vars, project_root, hint=False)
 
 def machines_scale(arg_vars, project_root):
-  f = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/" + arg_vars['profile_id'] + "_profile.yml"
+  cluster_id = arg_vars['cluster_id']
+  profile_id = arg_vars['profile_id']
+  f = util.machine_profile_file(project_rot, cluster_id, profile_id)
+
   with open(f, "r") as stream:
     content = yaml.load(stream)
     content['n_machine_instances'] = int(arg_vars['n'])
@@ -94,21 +108,22 @@ def machines_scale(arg_vars, project_root):
   with open(f, "w") as stream:
     stream.write(yaml.dump(content))
 
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Updated local Ansible playbook. Now run: engraver cluster provision" + bcolors.ENDC)
+  print_done("Updated local Ansible playbook. Now run: engraver cluster provision")
 
 def machines_new(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Creating new Ansible machine profile..." + bcolors.ENDC)
-  tpl = Template(resource_string(__name__, "ansible_template/vars/cluster_vars/machine_profiles/profile_template.yml"))
+  print_ok_pending("Creating new Ansible machine profile")
 
-  with open(project_root +
-            ("/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] +
-             "/machine_profiles/" + arg_vars['profile_id'] +
-             "_profile.yml"), "w") as text_file:
-    text_file.write(tpl.render(profile_id=arg_vars['profile_id'],
-                               n_instances=arg_vars['n'],
-                               size=arg_vars['size'],
-                               services=[x.strip() for x in arg_vars['services'].split(",")]))
+  cluster_id = arg_vars['cluster_id']
+  profile_id = arg_vars['profile_id']
+  tpl = util.profile_template()
+  path = util.machine_profile_id(project_root, cluster_id, profile_id)
+
+  with open(path, "w") as handle:
+    services = [x.strip() for x in arg_vars['services'].split(",")]
+    handle.write(tpl.render(profile_id = arg_vars['profile_id'],
+                            n_instances = arg_vars['n'],
+                            size = arg_vars['size'],
+                            services = services))
 
   refresh_provisioning_playbook(arg_vars, project_root)
-
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible machine profile creation." + bcolors.ENDC)
+  print_done("Finished Ansible machine profile creation")

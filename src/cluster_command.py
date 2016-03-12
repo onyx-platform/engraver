@@ -1,39 +1,44 @@
 #!/usr/bin/env python
 
-import json
 import yaml
-import ConfigParser
+import util
 
 from pkg_resources import resource_filename, resource_string
 from prettytable import PrettyTable
 from mako.template import Template
-from os.path import isfile, join, expanduser, exists
-from os import listdir, walk, chdir
+from os.path import isfile, join
+from os import listdir, walk
 from subprocess import call
-from colors import bcolors
+from colors import bcolors, print_ok_pending, print_ok, print_fail, print_done
 
 from machines_command import machines_teardown
 from ansible import invoke_ansible, refresh_provisioning_playbook
 
 def cluster_new(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Creating default Ansible playbook..." + bcolors.ENDC)
-  default_profile_file = resource_filename(__name__, "ansible_template/vars/cluster_vars/machine_profiles/default_profile.yml")
-  call(["mkdir", "-p", (project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles")])
-  call(["cp", default_profile_file, project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles/default_profile.yml"])
+  print_ok_pending("Creating default Ansible playbook")
 
-  tpl = Template(resource_string(__name__, "ansible_template/group_vars/all.yml"))
+  cluster_id = arg_vars['cluster_id']
+  default_profile_file = util.default_profile_template()
+  default_profile_target = util.machine_profile_file(project_root, cluster_id, "default")
 
-  with open((project_root + "/ansible/group_vars/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(cluster_id=arg_vars['cluster_id'],
-                               aws_region=arg_vars['aws_region'],
-                               aws_az=arg_vars['aws_az']))
+  call(["mkdir", "-p", util.machine_profiles_path(project_root, cluster_id)])
+  call(["cp", default_profile_file, default_profile_target])
+
+  tpl = util.common_cluster_template()
+  f = util.cluster_file(project_root, cluster_id)
+  with open(f, "w") as text_file:
+    text_file.write(tpl.render(cluster_id = cluster_id,
+                               aws_region = arg_vars['aws_region'],
+                               aws_az = arg_vars['aws_az']))
 
   refresh_provisioning_playbook(arg_vars, project_root)
 
-  post_file = resource_filename(__name__, "ansible_template/engraver_post.yml")
-  call(["cp", post_file, (project_root + "/ansible/" + arg_vars['cluster_id'] + "_post.yml")])
+  tpl = util.user_post_playbook_template()
+  f = util.user_post_playbook_file(project_root, cluster_id)
+  with open(f, "w") as handle:
+    handle.write(tpl.render())
 
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible playbook creation." + bcolors.ENDC)
+  print_done("Finished Ansible playbook creation.")
   print("")
 
 def cluster_describe(arg_vars, project_root):
@@ -43,7 +48,7 @@ def cluster_describe(arg_vars, project_root):
   t.align = "l"
 
   for c in clusters:
-    with open((project_root + "/ansible/group_vars/" + c + ".yml"), "r") as stream:
+    with open(util.cluster_file(project_root, c), "r") as stream:
       content = yaml.load(stream)
       region = content['aws_region']
       az = content['aws_subnet_az']
@@ -52,10 +57,11 @@ def cluster_describe(arg_vars, project_root):
   print t
 
 def cluster_teardown(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Tearing down all machine profiles ... " + bcolors.ENDC)
+  print_ok_pending("Tearing down all machine profiles")
   print("")
 
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
+  cluster_id = arg_vars['cluster_id']
+  path = util.machine_profiles_path(project_root, cluster_id)
   files = [f for f in listdir(path) if isfile(join(path, f))]
 
   for f in files:
@@ -64,22 +70,28 @@ def cluster_teardown(arg_vars, project_root):
       arg_vars['profile_id'] = content['profile_id']
       machines_teardown(arg_vars, project_root)
 
-  print(bcolors.OKBLUE + "> Tearing down the VPC ... " + bcolors.ENDC)
+  print_ok_pending("Tearign down the VPC")
 
-  tpl = Template(resource_string(__name__, "ansible_template/cluster_remove.yml"))
-  with open(project_root + "/ansible/cluster_remove.yml", "w") as text_file:
+  tpl = util.cluster_remove_template()
+  with open(util.cluster_remove_file(project_root), "w") as text_file:
     path = project_root + "/ansible/roles"
     services = next(walk(path))[1]
     text_file.write(tpl.render(services=services))
 
-  invoke_ansible(arg_vars, project_root, "cluster_remove.yml")
-  call(["rm", (project_root + "/ansible/group_vars/" + arg_vars['cluster_id'] + ".yml")])
-  call(["rm", "-r", (project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'])])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
+  invoke_ansible(arg_vars, project_root, util.cluster_remove_playbook())
+
+  call(["rm", util.cluster_file(project_root, cluster_id)])
+  call(["rm", "-r", util.cluster_path(project_root, cluster_id)])
+
+  print_done("Finished running Ansible.")
 
 def cluster_provision(arg_vars, project_root):
-  print(bcolors.OKBLUE + "> Invoking Ansible and streaming its output ..." + bcolors.ENDC)
+  print_ok_pending("Invoking Ansible and streaming its output")
+
+  cluster_id = arg_vars['cluster_id']
+
   refresh_provisioning_playbook(arg_vars, project_root)
-  invoke_ansible(arg_vars, project_root, arg_vars['cluster_id'] + ".yml")
-  invoke_ansible(arg_vars, project_root, arg_vars['cluster_id'] + "_post.yml")
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished running Ansible." + bcolors.ENDC)
+  invoke_ansible(arg_vars, project_root, util.provisioning_playbook(cluster_id))
+  invoke_ansible(arg_vars, project_root, util.post_provisioning_playbook(cluster_id))
+
+  print_done("Finished running Ansible.")
