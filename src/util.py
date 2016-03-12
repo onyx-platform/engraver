@@ -40,6 +40,10 @@ def machine_profile_file(project_root, cluster_id, profile_id):
   profiles_path = machine_profiles_path(project_root, cluster_id)
   return base.format(profiles_path, profile_id)
 
+def provisioning_file(project_root, cluster_id):
+  base = "{0}/ansible/{1}.yml"
+  return base.format(project_root, cluster_id)
+
 def cluster_file(project_root, cluster_id):
   base = "{0}/ansible/group_vars/${1}.yml"
   return base.format(project_root, cluster_id)
@@ -87,6 +91,10 @@ def machines_remove_template():
 def cluster_remove_template():
   base = "ansible_template/cluster_remove.yml"
   return Template(resource_string(__name__, base))
+
+def provisionining_template():
+  base = "ansible_template/engraver_aws.yml"
+  return Template(resource_filename(__name__, base))
 
 def user_post_playbook_template():
   base = "ansible_template/engraver_post.yml"

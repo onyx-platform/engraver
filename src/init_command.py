@@ -2,7 +2,7 @@
 
 import json
 
-from colors import bcolors
+from colors import bcolors, print_ok, print_ok_pending, print_done
 from subprocess import call
 from pkg_resources import resource_filename
 
@@ -12,69 +12,69 @@ def init(arg_vars, project_root):
   roles_dir = ansible_dir + "/roles"
 
   if arg_vars.get('example_app') == 'beginner':
-    print(bcolors.OKBLUE + "> Cloning beginner playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+    print_ok_pending("Cloning beginner playbook via Git. Streaming Git output")
     call(["git", "clone", "https://github.com/onyx-platform/engraver-beginner-example.git", app_name])
-    print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning example." + bcolors.ENDC)
+    print_done("Finished cloning example.")
   else:
-    print(bcolors.OKBLUE + "> Invoking Leiningen and streaming its output ..." + bcolors.HEADER)
+    print_ok_pending("Invoking Leiningen and streaming its output")
     call(["lein", "new", "onyx-app", app_name, "+docker"])
-    print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Leiningen." + bcolors.ENDC)
+    print_done("Finished executing Leiningen.")
   print("")
 
-  print(bcolors.OKBLUE + "> Initializing .engraver folders ..." + bcolors.ENDC)
+  print_ok_pending("Initializing .engraver folders")
   call(["mkdir", "-p", (app_name + "/.engraver")])
   call(["touch", (app_name + "/.engraver/config.json")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished .engraver folder initialization." + bcolors.ENDC)
+  print_done("Finished .engraver folder initialization.")
   print("")
 
-  print(bcolors.OKBLUE + "> Creating new Ansible playbook. Streaming Ansible output ..." + bcolors.HEADER)
+  print_ok_pending("Creating new Ansible playbook. Streaming Ansible output ...")
   call(["ansible-galaxy", "init", ansible_dir])
   call(["cp", resource_filename(__name__, "ansible_template/ansible.cfg"), ansible_dir])
   call(["cp", resource_filename(__name__, "ansible_template/refresh_cache.yml"), ansible_dir])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished executing Ansible." + bcolors.ENDC)
+  print_done("Finished executing Ansible.")
   print("")
 
-  print(bcolors.OKBLUE + "> Updating .gitignore for Engraver files ..." + bcolors.HEADER)
+  print_ok_pending("Updating .gitignore for Engraver files")
   call("echo '.engraver/clusters/*' >> " + app_name + "/.gitignore", shell=True)
   call("echo 'ansible/machines_remove.yml' >> " + app_name + "/.gitignore", shell=True)
   call("echo 'ansible/cluster_remove.yml' >> " + app_name + "/.gitignore", shell=True)
   call("echo 'ansible/job_submit.yml' >> " + app_name + "/.gitignore", shell=True)
   call("echo 'ansible/job_kill.yml' >> " + app_name + "/.gitignore", shell=True)
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished updating .gitignore." + bcolors.ENDC)
+  print_done("Finished updating .gitignore")
   print("")
   
-  print(bcolors.OKBLUE + "> Cloning Ansible AWS playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+  print_pending_ok("Cloning Ansible AWS playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-aws.git", roles_dir + "/aws"])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print_done("Finished cloning playbook.")
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible Docker playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+  print_pending_ok("Cloning Ansible Docker playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-docker.git", roles_dir + "/docker"])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print_done("Finished cloning playbook.")
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible ZooKeeper playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+  print_pending_ok("Cloning Ansible ZooKeeper playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-zookeeper.git", roles_dir + "/zookeeper"])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print_done("Finished cloning playbook.")
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible BookKeeper playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+  print_pending_ok("Cloning Ansible BookKeeper playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-bookkeeper.git", roles_dir + "/bookkeeper"])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print_done("Finished cloning playbook.")
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible Kafka playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+  print_pending_ok("Cloning Ansible Kafka playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-kafka.git", roles_dir + "/kafka"])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print_done("Finished cloning playbook.")
   print("")
 
-  print(bcolors.OKBLUE + "> Cloning Ansible Onyx playbook via Git. Streaming Git output ..." + bcolors.HEADER)
+  print_pending_ok("Cloning Ansible Onyx playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-onyx.git", roles_dir + "/onyx"])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished cloning playbook." + bcolors.ENDC)
+  print_done("Finished cloning playbook.")
   print("")
-  
-  print(bcolors.OKBLUE + "> Initializing Ansible vars directories..." + bcolors.ENDC)
+
+  print_ok_pending("Initializing Ansible vars directories")
   call(["mkdir", "-p", (ansible_dir + "/group_vars")])
   call(["mkdir", "-p", (ansible_dir + "/vars/cluster_vars")])
-  print(bcolors.OKBLUE + bcolors.BOLD + "> Finished Ansible vars directory creation." + bcolors.ENDC)
+  print_done("Finished Ansible vars directory creation.")
   print("")

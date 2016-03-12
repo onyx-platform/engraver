@@ -46,8 +46,9 @@ def invoke_ansible(arg_vars, project_root, playbook, extras = {}):
   call(pre + raw + form_env_vars(extras) + post)
 
 def refresh_provisioning_playbook(arg_vars, project_root):
-  tpl = Template(resource_string(__name__, "ansible_template/engraver_aws.yml"))
-  path = project_root + "/ansible/vars/cluster_vars/" + arg_vars['cluster_id'] + "/machine_profiles"
+  cluster_id = arg_vars['cluster_id']
+  tpl = util.provisioning_template()
+  path = util.machine_profiles_path(project_root, arg_vars)
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
 
   services = {}
@@ -68,12 +69,12 @@ def refresh_provisioning_playbook(arg_vars, project_root):
       service_graph[s] = set(content.get('service_dependencies', {}))
 
   service_seq = toposort_flatten(service_graph)
-  with open((project_root + "/ansible/" + arg_vars['cluster_id'] + ".yml"), "w") as text_file:
-    text_file.write(tpl.render(cluster_id=arg_vars['cluster_id'],
-                               services=services,
-                               profiles=profiles,
-                               service_seq=service_seq,
-                               service_graph=service_graph))
+  with open(util.provisioning_file(project_root, cluster_id), "w") as text_file:
+    text_file.write(tpl.render(cluster_id = cluster_id,
+                               services = services,
+                               profiles = profiles,
+                               service_seq = service_seq,
+                               service_graph = service_graph))
 
 def collect_onyx_profiles(arg_vars):
   cluster_id = arg_vars['cluster_id']
