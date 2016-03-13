@@ -12,7 +12,7 @@ def job_submit(arg_vars, project_root):
   refresh_submit_playbook(arg_vars, project_root)
   invoke_ansible(arg_vars, project_root,
                  util.job_submit_playbook(),
-                 {"onyx_job_name": "job_name"})
+                 {"onyx_job_name": arg_vars['job_name']})
 
   print_done("Finished running Ansible.")
 
@@ -22,6 +22,6 @@ def job_kill(arg_vars, project_root):
   refresh_kill_playbook(arg_vars, project_root)
   invoke_ansible(arg_vars, project_root,
                  util.job_kill_playbook(),
-                 {"onyx_job_id" : "job_id"})
+                 {"onyx_job_id" : arg_vars['job_id']})
 
   print_done("Finished running Ansible.")
