@@ -84,10 +84,34 @@ Engraver wraps the Python configuration management tool Ansible. Engraver is pri
 
 ### Machine Profiles In-Depth
 
+It's helpful to think of machine profiles as "cookie-cutters". Profiles are specifications for what a particular machine should look like when we provision it in the cloud, and how many we want. In the image below, the right side represents 3 different profiles (the "specification" portion). The left side represents the manifestation of those profiles when they are provisioned.
+
 <p align="center">
   <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/profiles.svg">
 </p>
 
+This example shows a total of *9* machines actively running:
+- 6 of them belong to the Onyx Profile
+- 1 of them belongs to the Monitoring Profile
+- 3 of them belong to the Ingestion Profile
+
+#### Preconfigured High Availability
+
+All 6 of the Onyx Profile machines in the example are running ZooKeeper, BookKeeper, and Onyx. By default, Engraver is preconfigured for highly available. That is, there would be 6 nodes running as a single ZooKeeper cluster.
+
+If the same service runs in two different profiles, *all* instances of that service will run as a single unit. If this isn't desired, the services can be deployed in two different Engraver clusters for full isolation.
+
+#### Service Dependencies
+
+Some services require that other services be provisioned beforehand. A service can express dependencies by adding a `service_dependencies` key to its `defaults/main.yml` Ansible role. The value of this key should be a sequence of services. For example, the Onyx service declares the following dependencies:
+
+```
+service_dependencies:
+  - zookeeper
+  - bookkeeper
+```
+
+This forces the ZooKeeper and BookKeeper services to be provisioned before Onyx is provisioned on a machine.
 
 ### Tutorial
 
