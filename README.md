@@ -46,6 +46,24 @@ If you disagree with our set up of Ansible out of the box, that's fine. If you k
   <img width="60%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/lifecycle.svg">
 </p>
 
+### Concepts
+
+#### Clusters
+
+#### Machine Profiles
+
+#### Services
+
+#### Provisioning
+
+#### Deployment
+
+#### Jobs
+
+<p align="center">
+  <img width="60%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
+</p>
+
 ### User Guide
 
 This a short guide that explains each major piece of Engraver by walking through an example.
