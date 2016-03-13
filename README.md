@@ -36,7 +36,7 @@ To run Engraver, you will need:
 
 ### Summary
 
-Engraver is a tool for managing Onyx cluster infrastructure. Unlike other platforms such as Spark and Hadoop, Onyx does not provide a means for application deployment. The design decision to omit deployment is intentional since it lets application authors choose how and when to deploy application code instead of being forced to opt into a predetermined strategy.
+Engraver is a tool for managing Onyx cluster infrastructure. Unlike other platforms such as Spark and Hadoop, Onyx does not embed a means for application deployment. The design decision to omit deployment is intentional since it lets application authors choose how and when to deploy application code instead of being forced to opt into a predetermined strategy.
 
 There is a fair amount of overlap, however, between the deployment techniques for many teams that run Onyx in clustered, production environments. Engraver is a tool that unifies deployment code and makes a handful of opinionated decisions for the sake of making it easier to run Onyx in the cloud. Engraver itself is a Python based tool that wraps Ansible. We designed Engraver to make it friendly for getting started on using Onyx without knowing Ansible, but you're encouraged to learn Ansible along the way to make your Onyx deployment customized to your needs.
 
@@ -48,17 +48,31 @@ If you disagree with our set up of Ansible out of the box, that's fine. If you k
 
 ### Concepts
 
+This is a glossary for all the concepts that we use in Engraver. Each term is briefly explained. See other sections of the documentation for more in-depth discussion.
+
 #### Clusters
+
+A cluster is a set of virtual machines that run inside an isolated network. Machines are constructed from machine profiles, and run services when they are active. A cluster is the highest level of deployment isolation in Engraver.
 
 #### Machine Profiles
 
+A machine profile is a specification of what services should run on a virtual machine, what the specifications of the virtual machine are, and how many virtual machines should be created. For example, a machine profile would specify what image its operating system will run, which data center it will run in, and what flavor of machine is desired. It would also declare that it needs some number of those machines - perhaps 3.
+
 #### Services
+
+Services are programs that run on virtual machines. Examples of services are ZooKeeper and Kafka. Services are *typically* expected to run inside containers, but this isn't a strict requirement.
 
 #### Provisioning
 
+Provisioning is the act of creating the infrastructure for the cluster (Virtual Private Cloud, virtual machines, and so far), installing services, and starting the services. Provisioning is idempotent. If you provision more than once, Engraver will attempt to bring the cluster to the desired state determined by what the machine profiles specify.
+
 #### Deployment
 
+Deployment is the process by which Engraver deploys Onyx applications to virtual machines. Running the deployment command through Engraver will clean and uberjar your application, create a Docker image, upload the image to DockHub, and pull it down on all machines running the "Onyx" service. A container will be started on each machine, and Onyx will begin running.
+
 #### Jobs
+
+Engraver jobs refer to Onyx jobs. When we *submit* or *kill* a job, we are specifically talking about Onyx jobs. Since Onyx divorces the notion of deployment from job submision, we have the flexibility of doing rolling deployment updates to the Onyx application while the job continues to run on the cluster.
 
 <p align="center">
   <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
@@ -71,7 +85,7 @@ If you disagree with our set up of Ansible out of the box, that's fine. If you k
 </p>
 
 
-### User Guide
+### Tutorial
 
 This a short guide that explains each major piece of Engraver by walking through an example.
 
