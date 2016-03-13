@@ -98,7 +98,7 @@ def machines_cache(arg_vars, project_root):
 def machines_scale(arg_vars, project_root):
   cluster_id = arg_vars['cluster_id']
   profile_id = arg_vars['profile_id']
-  f = util.machine_profile_file(project_rot, cluster_id, profile_id)
+  f = util.machine_profile_file(project_root, cluster_id, profile_id)
 
   with open(f, "r") as stream:
     content = yaml.load(stream)

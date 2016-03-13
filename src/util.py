@@ -129,7 +129,7 @@ def verify_cluster_exists(arg_vars, project_root):
 def verify_profile_exists(arg_vars, project_root):
   cluster_id = arg_vars['cluster_id']
   profile_id = arg_vars['profile_id']
-  f = machines_profile_file(project_root, cluster_id, profile_id)
+  f = machine_profile_file(project_root, cluster_id, profile_id)
   r = exists(f)
 
   if not r:
