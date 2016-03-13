@@ -61,13 +61,13 @@ If you disagree with our set up of Ansible out of the box, that's fine. If you k
 #### Jobs
 
 <p align="center">
-  <img width="60%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
+  <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
 </p>
 
 ### Machine Profiles In-Depth
 
 <p align="center">
-  <img width="60%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/profiles.svg">
+  <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/profiles.svg">
 </p>
 
 
