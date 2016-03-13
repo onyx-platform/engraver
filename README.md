@@ -42,6 +42,10 @@ There is a fair amount of overlap, however, between the deployment techniques fo
 
 If you disagree with our set up of Ansible out of the box, that's fine. If you know enough about configuration management to take issue with the set up, you're in the category of developers that's advanced enough to not need Engraver. For everyone else, we've built Engraver to be a springboard into production, and can be used for serious deployments.
 
+<p align="center">
+  <img width="60%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/lifecycle.svg">
+</p>
+
 ### User Guide
 
 This a short guide that explains each major piece of Engraver by walking through an example.
