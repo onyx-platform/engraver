@@ -27,7 +27,7 @@ def init(arg_vars, project_root):
   print_done("Finished .engraver folder initialization.")
   print("")
 
-  print_ok_pending("Creating new Ansible playbook. Streaming Ansible output ...")
+  print_ok_pending("Creating new Ansible playbook. Streaming Ansible output")
   call(["ansible-galaxy", "init", ansible_dir])
   call(["cp", resource_filename(__name__, "ansible_template/ansible.cfg"), ansible_dir])
   call(["cp", resource_filename(__name__, "ansible_template/refresh_cache.yml"), ansible_dir])
@@ -43,32 +43,32 @@ def init(arg_vars, project_root):
   print_done("Finished updating .gitignore")
   print("")
   
-  print_pending_ok("Cloning Ansible AWS playbook via Git. Streaming Git output")
+  print_ok_pending("Cloning Ansible AWS playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-aws.git", roles_dir + "/aws"])
   print_done("Finished cloning playbook.")
   print("")
 
-  print_pending_ok("Cloning Ansible Docker playbook via Git. Streaming Git output")
+  print_ok_pending("Cloning Ansible Docker playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-docker.git", roles_dir + "/docker"])
   print_done("Finished cloning playbook.")
   print("")
 
-  print_pending_ok("Cloning Ansible ZooKeeper playbook via Git. Streaming Git output")
+  print_ok_pending("Cloning Ansible ZooKeeper playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-zookeeper.git", roles_dir + "/zookeeper"])
   print_done("Finished cloning playbook.")
   print("")
 
-  print_pending_ok("Cloning Ansible BookKeeper playbook via Git. Streaming Git output")
+  print_ok_pending("Cloning Ansible BookKeeper playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-bookkeeper.git", roles_dir + "/bookkeeper"])
   print_done("Finished cloning playbook.")
   print("")
 
-  print_pending_ok("Cloning Ansible Kafka playbook via Git. Streaming Git output")
+  print_ok_pending("Cloning Ansible Kafka playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-kafka.git", roles_dir + "/kafka"])
   print_done("Finished cloning playbook.")
   print("")
 
-  print_pending_ok("Cloning Ansible Onyx playbook via Git. Streaming Git output")
+  print_ok_pending("Cloning Ansible Onyx playbook via Git. Streaming Git output")
   call(["git", "clone", "https://github.com/onyx-platform/engraver-onyx.git", roles_dir + "/onyx"])
   print_done("Finished cloning playbook.")
   print("")

@@ -3,7 +3,6 @@
 import yaml
 import util
 
-from pkg_resources import resource_filename, resource_string
 from prettytable import PrettyTable
 from mako.template import Template
 from os.path import isfile, join
@@ -18,11 +17,13 @@ def cluster_new(arg_vars, project_root):
   print_ok_pending("Creating default Ansible playbook")
 
   cluster_id = arg_vars['cluster_id']
-  default_profile_file = util.default_profile_template()
-  default_profile_target = util.machine_profile_file(project_root, cluster_id, "default")
-
   call(["mkdir", "-p", util.machine_profiles_path(project_root, cluster_id)])
-  call(["cp", default_profile_file, default_profile_target])
+
+  tpl = util.default_profile_template()
+  f = util.machine_profile_file(project_root, cluster_id, "default")
+
+  with open(f, "w") as handle:
+    handle.write(tpl.render())
 
   tpl = util.common_cluster_template()
   f = util.cluster_file(project_root, cluster_id)

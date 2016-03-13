@@ -14,7 +14,7 @@ def stream_logs(arg_vars, project_root):
   config.read(engraver_profile)
   pem_file_path = config.get('aws', 'pem_file_name', 0)
   remote_user = config.get('aws', 'remote_user', 0)
-  services = arg_vars['service']
+  service = arg_vars['service']
   container_name = service + "_container_name"
 
   f = util.service_path(project_root, service)

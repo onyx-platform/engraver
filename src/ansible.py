@@ -48,7 +48,7 @@ def invoke_ansible(arg_vars, project_root, playbook, extras = {}):
 def refresh_provisioning_playbook(arg_vars, project_root):
   cluster_id = arg_vars['cluster_id']
   tpl = util.provisioning_template()
-  path = util.machine_profiles_path(project_root, arg_vars)
+  path = util.machine_profiles_path(project_root, cluster_id)
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
 
   services = {}

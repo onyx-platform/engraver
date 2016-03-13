@@ -11,7 +11,7 @@ from os.path import isfile, join, expanduser, exists
 from os import listdir
 from subprocess import call
 
-from colors import bcolors, print_done, print_fail
+from colors import bcolors, print_ok, print_done, print_fail, print_ok_pending
 from util import verify_cluster_exists, verify_profile_exists
 from ansible import invoke_ansible, refresh_provisioning_playbook
 
@@ -27,14 +27,13 @@ def machines_describe(arg_vars, project_root):
     for f in files:
       with open(path + "/" + f, 'r') as stream:
         content = yaml.load(stream)
-        services = ", ".join(content['machine_services']),
         t.add_row([content['profile_id'],
                    content['ec2_instance_type'],
-                   services,
+                   ", ".join(content['machine_services']),
                    content['n_machine_instances']])
     print t
   else:
-    print_ok("No machine profiles were found for this cluster.")
+    print_fail("No machine profiles were found for this cluster.")
 
 def machines_teardown(arg_vars, project_root):
   cluster_id = arg_vars['cluster_id']

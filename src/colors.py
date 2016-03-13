@@ -15,7 +15,7 @@ def print_fail(x):
   print(base.format(bcolors.FAIL, x, bcolors.ENDC))
 
 def print_done(x):
-  base = "{0}{1}> {3}{4}"
+  base = "{0}{1}> {2}{3}"
   print(base.format(bcolors.OKBLUE, bcolors.BOLD, x, bcolors.ENDC))
 
 def print_ok(x):
@@ -24,5 +24,5 @@ def print_ok(x):
 
 def print_ok_pending(x):
   base = "{0}> {1} ...{2}"
-  print(base.format(bcolors.OKBLUE, x, "...", bcolors.ENDC))
+  print(base.format(bcolors.OKBLUE, x, bcolors.ENDC))
 
