@@ -76,9 +76,9 @@ def refresh_provisioning_playbook(arg_vars, project_root):
                                service_seq = service_seq,
                                service_graph = service_graph))
 
-def collect_onyx_profiles(arg_vars):
+def collect_onyx_profiles(project_root, arg_vars):
   cluster_id = arg_vars['cluster_id']
-  path = machine_profiles_path(project_root, cluster_id)
+  path = util.machine_profiles_path(project_root, cluster_id)
   profile_files = [f for f in listdir(path) if isfile(join(path, f))]
   profiles = []
 
@@ -92,21 +92,21 @@ def collect_onyx_profiles(arg_vars):
 
 def refresh_deployment_playbook(arg_vars, project_root):
   tpl = util.deploy_template()
-  profiles = collect_onyx_profiles(arg_vars)
+  profiles = collect_onyx_profiles(project_root, arg_vars)
 
   with open(util.deploy_file(project_root), "w") as text_file:
     text_file.write(tpl.render(profiles = profiles))
 
 def refresh_submit_playbook(arg_vars, project_root):
   tpl = util.job_submit_template()
-  profiles = collect_onyx_profiles(arg_vars)
+  profiles = collect_onyx_profiles(project_root, arg_vars)
 
   with open(util.job_submit_file(project_root), "w") as handle:
     handle.write(tpl.render(profiles=profiles))
 
 def refresh_kill_playbook(arg_vars, project_root):
   tpl = util.job_kill_template()
-  profiles = collect_onyx_profiles(arg_vars)
+  profiles = collect_onyx_profiles(project_root, arg_vars)
 
   with open(util.job_kill_file(project_root), "w") as handle:
-    hansle.write(tpl.render(profiles=profiles))
+    handle.write(tpl.render(profiles=profiles))

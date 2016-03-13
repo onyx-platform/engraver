@@ -23,7 +23,7 @@ def deploy_playbook():
   return "deploy.yml"
 
 def job_submit_playbook():
-  return "job_kill.yml"
+  return "job_submit.yml"
 
 def job_kill_playbook():
   return "job_kill.yml"

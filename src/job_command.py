@@ -14,7 +14,7 @@ def job_submit(arg_vars, project_root):
                  util.job_submit_playbook(),
                  {"onyx_job_name": "job_name"})
 
-  print_ok_done("Finished running Ansible.")
+  print_done("Finished running Ansible.")
 
 def job_kill(arg_vars, project_root):
   print_ok_pending("Invoking Ansible and streaming its output")
@@ -24,4 +24,4 @@ def job_kill(arg_vars, project_root):
                  util.job_kill_playbook(),
                  {"onyx_job_id" : "job_id"})
 
-  print_ok_done("Finished running Ansible.")
+  print_done("Finished running Ansible.")
