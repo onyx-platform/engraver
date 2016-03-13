@@ -74,6 +74,10 @@ Deployment is the process by which Engraver deploys Onyx applications to virtual
 
 Engraver jobs refer to Onyx jobs. When we *submit* or *kill* a job, we are specifically talking about Onyx jobs. Since Onyx divorces the notion of deployment from job submision, we have the flexibility of doing rolling deployment updates to the Onyx application while the job continues to run on the cluster.
 
+#### Ansible
+
+Engraver wraps the Python configuration management tool Ansible. Engraver is primarily reasonable for generating Ansible files in the background while commands are executed. Engraver interprets user commands and maps them to Ansible Yaml files. When a change is ready to be made to a cluster, Engraver turns around and invokes Ansible under the hood. Engraver allows full access to Ansible for users who know what they're doing and want a little more power.
+
 <p align="center">
   <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
 </p>
