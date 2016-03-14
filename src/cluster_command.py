@@ -20,7 +20,7 @@ def cluster_new(arg_vars, project_root):
   call(["mkdir", "-p", util.machine_profiles_path(project_root, cluster_id)])
 
   tpl = util.default_profile_template()
-  f = util.machine_profiles_file(project_root, cluster_id, "default")
+  f = util.machine_profile_file(project_root, cluster_id, "default")
 
   with open(f, "w") as handle:
     handle.write(tpl.render())
