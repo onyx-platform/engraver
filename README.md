@@ -90,7 +90,7 @@ It's helpful to think of machine profiles as "cookie-cutters". Profiles are spec
   <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/profiles.svg">
 </p>
 
-This example shows a total of *9* machines actively running:
+This example shows a total of *10* machines actively running:
 - 6 of them belong to the Onyx Profile
 - 1 of them belongs to the Monitoring Profile
 - 3 of them belong to the Ingestion Profile
@@ -122,10 +122,10 @@ This a short guide that explains each major piece of Engraver by walking through
 To make a new Engraver project named `hello-world`, run:
 
 ```
-$ engraver init hello-world
+$ engraver init hello-world --example-app beginner
 ```
 
-The `init` command will invoke Leiningen and create a new Onyx application template. It will clone some other repositories from the OnyxPlatform GitHub account. The extra clones are used for standing up your cluster in a cloud environment.
+The `init` command will invoke Leiningen and create a new Onyx application template. It will clone some other repositories from the OnyxPlatform GitHub account. The extra clones are used for standing up your cluster in a cloud environment. We ran this command with the `--example-app` switch. We currently have one preconfigured project that we'll use for demonstration purposes.
 
 #### Account Configuration
 
@@ -135,7 +135,7 @@ Before we *really* get rolling, you'll need to tell Engraver about yourself. In 
 $ engraver configure aws
 ```
 
-Fill out the prompts to authenticate yourself with AWS.
+Fill out the prompts to authenticate yourself with AWS. For the "remote user" prompt, use "ubuntu". This is the user that we'll use for SSH connectivity on our cluster. By default, the machines in an Engraver cluster run an Ubuntu Linux Distro.
 
 #### Cluster Management
 
@@ -171,6 +171,15 @@ $ engraver machines describe --cluster-id dev
 +------------+----------+-----------------------------+---------------+
 | default    | c4.large | zookeeper, bookkeeper, onyx |       3       |
 +------------+----------+-----------------------------+---------------+
+```
+
+```
+$ engraver machines describe --cluster-id dev
++------------+----------+------------------------------------+---------------+
+| Profile ID | Size     | Services                           | Desired Count |
++------------+----------+------------------------------------+---------------+
+| default    | c4.large | zookeeper, bookkeeper, kafka, onyx |       3       |
++------------+----------+------------------------------------+---------------+
 ```
 
 By default, Engraver is ready to provision the `dev` cluster with `3` machines. Each of those machines will run Onyx, ZooKeeper, and BookKeeper. Since these services are provided by Engraver itself, we're preconfigured them to be highly available out of the box. These machines will be EC2 instances of type `c4.large`.
@@ -248,7 +257,7 @@ $ engraver machines list --cluster-id dev
 With our cluster up and running, it'd be nice to know what the heck is going on! Engraver can automatically stream logs from Docker containers onto your nachine. Our machine profile asked for 3 machines to all run ZooKeeper, so let's take a look:
 
 ```
-$ engraver logs --cluster-id dev --service zookeeper ec2-52-90-230-216.compute-1.amazonaws.com
+$ engraver logs ec2-52-90-230-216.compute-1.amazonaws.com --cluster-id dev --service zookeeper
 ```
 
 A stream of log contents will be played into your terminal. You can abort out of it using your OS-specific key combination. Note that log streaming will only work for services that declare a `container_name` var in the default values file of their Ansible playbook.
@@ -266,11 +275,11 @@ We've updated our profile. Let's verify:
 
 ```
 $ engraver machines describe --cluster-id dev
-+------------+----------+-----------------------------+---------------+
-| Profile ID | Size     | Services                    | Desired Count |
-+------------+----------+-----------------------------+---------------+
-| default    | c4.large | zookeeper, bookkeeper, onyx |       1       |
-+------------+----------+-----------------------------+---------------+
++------------+----------+------------------------------------+---------------+
+| Profile ID | Size     | Services                           | Desired Count |
++------------+----------+------------------------------------+---------------+
+| default    | c4.large | zookeeper, bookkeeper, kafka, onyx |       1       |
++------------+----------+------------------------------------+---------------+
 ```
 
 Desired count is `1`. Let's make it happen by provisioning!
@@ -303,10 +312,16 @@ $ docker login
 Then deploy with:
 
 ```
-$ engraver deploy --via dockerhub --cluster-id dev --tenancy-id mdrogalis --dockerhub-username michaeldrogalis --n-peers 4
+$ engraver deploy --via dockerhub --cluster-id dev --tenancy-id message-processor --dockerhub-username <your username> --n-peers 4
 ```
 
 The above command uberjars your application, creates a container image, pushes it to DockerHub, then pulls it down onto any machines in your cluster that run the "Onyx" service. It will starts `4` peers on each machine. This is going to take a while for the first time, so you might want to grab a cup of coffee. The Docker image for your application is uploading its base image, which includes Java, plus its own uberjar. After your first push and pull to/from DockerHub, the base image will be cached on both DockerHub and the machines on your cluster - drastically cutting down on upload/download time thereafter.
+
+#### Job Submission
+
+```
+$ engraver job submit --cluster-id dev --tenancy-id test --job-name message-processor
+```
 
 #### Teardown
 
