@@ -82,6 +82,8 @@ Engraver wraps the Python configuration management tool Ansible. Engraver is pri
   <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
 </p>
 
+### How it Works
+
 ### Machine Profiles In-Depth
 
 It's helpful to think of machine profiles as "cookie-cutters". Profiles are specifications for what a particular machine should look like when we provision it in the cloud, and how many we want. In the image below, the right side represents 3 different profiles (the "specification" portion). The left side represents the manifestation of those profiles when they are provisioned.
@@ -127,6 +129,8 @@ $ engraver init hello-world --example-app beginner
 
 The `init` command will invoke Leiningen and create a new Onyx application template. It will clone some other repositories from the OnyxPlatform GitHub account. The extra clones are used for standing up your cluster in a cloud environment. We ran this command with the `--example-app` switch. We currently have one preconfigured project that we'll use for demonstration purposes.
 
+The example application that we're going to deploy has one input and one output stream - both through Kafka. The workflow that we built for this app accepts messages and applies a few basic string transformations before routing them to an output stream. Study the source folder and run the tests for a local, in-memory execution of the Onyx job.
+
 #### Account Configuration
 
 Before we *really* get rolling, you'll need to tell Engraver about yourself. In this guide, we'll use AWS:
@@ -139,13 +143,13 @@ Fill out the prompts to authenticate yourself with AWS. For the "remote user" pr
 
 #### Cluster Management
 
-Once you `cd` into the `hello-world` directory and get comfortable with the Onyx project, you create a specification for a new cluster. Engrave lets you have as many clusters as you want. Let's make a cluster called `dev` in AWS:
+Once you `cd` into the `hello-world` directory and get comfortable with the Onyx project, you can create a specification for a new cluster. Engrave lets you have as many clusters as you want. Let's make a cluster called `dev` in AWS:
 
 ```
 $ engraver cluster new --provider aws --cluster-id dev
 ```
 
-Running this command will generate some files, but it won't actually stand up anything in AWS yet. We can inspect our specification specification with:
+Running this command will generate some files, but it won't actually stand up anything in AWS yet. We can inspect our specification with:
 
 ```
 $ engraver cluster describe
@@ -160,9 +164,9 @@ Clusters are automatically provisioned into a default region and availability zo
 
 #### Machine Profiles and Services
 
-When you create a new cluster, Engraver will automatically generate a default *machine profile*. A machine profile is the set of services that will run on a machine, and how many machines are desired. Machine profiles are higher level than simple services since it lets you express multiple services being colocated on a single machine.
+When you create a new cluster, Engraver will automatically generate a default *machine profile*. A machine profile is the set of services that will run *each machine provisioned with that profile*, and how many machines are desired. Machine profiles are higher level than simple services since it lets you express multiple services being colocated on a single machine.
 
-Engraver gives us a default profile. What's in it?
+Engraver gives us a default profile when we create a new profile. What's in it?
 
 ```
 $ engraver machines describe --cluster-id dev
@@ -173,6 +177,23 @@ $ engraver machines describe --cluster-id dev
 +------------+----------+-----------------------------+---------------+
 ```
 
+The default profile gives us 3 services. Our example uses Kafka for its input and output streams, so we'll need to either modify the default profile or create a new one. In this tutorial, we'll simply edit modify the default profile.
+
+Edit the `ansible/vars/cluster_vars/dev/machine_profiles/default_profile.yml` file, relative to the root of your project. You should see the following content:
+
+```
+profile_id: default
+ec2_image_id: ami-d05e75b8
+ec2_instance_type: c4.large
+n_machine_instances: 3
+machine_services:
+  - zookeeper
+  - bookkeeper
+  - onyx
+```
+
+Add "`- kafka`" at the bottom of the file, and save it. Then run the command to describe the cluster again. You'll see your changes reflected:
+
 ```
 $ engraver machines describe --cluster-id dev
 +------------+----------+------------------------------------+---------------+
@@ -182,7 +203,7 @@ $ engraver machines describe --cluster-id dev
 +------------+----------+------------------------------------+---------------+
 ```
 
-By default, Engraver is ready to provision the `dev` cluster with `3` machines. Each of those machines will run Onyx, ZooKeeper, and BookKeeper. Since these services are provided by Engraver itself, we're preconfigured them to be highly available out of the box. These machines will be EC2 instances of type `c4.large`.
+By default, Engraver is ready to provision the `dev` cluster with `3` machines of the default profile. Each of those machines will run Onyx, ZooKeeper, Kafka, and BookKeeper. Since these services are provided by Engraver itself, we've already preconfigured them to be highly available out of the box. These machines will be EC2 instances of type `c4.large`.
 
 Is anything running yet? No, but we can verify that:
 
@@ -193,7 +214,7 @@ $ engraver machines list --cluster-id dev
 > No cached contents found.
 ```
 
-Oops! What's happened? Engraver caches knowledge about provisioned clusters locally in the `.engraver` folder (the cache shouldn't be checked into version control to avoid merge conflicts). Certain commands automatically update the local cache for you. Since we haven't run such a command yet, we'll need to update the cache ourselves:
+Oops! What's happened? Engraver caches knowledge about provisioned clusters locally in the `.engraver` folder (the cache shouldn't be checked into version control to avoid merge conflicts, and it is put into the `.gitignore` by default). Certain commands automatically update the local cache for you. Since we haven't run such a command yet, we'll need to update the cache ourselves:
 
 ```
 $ engraver machines cache --cluster-id dev
@@ -207,7 +228,7 @@ $ engraver machines cache --cluster-id dev
 +--+----+---------+-----------------+------------+
 ```
 
-Sure enough, we don't have any machines yet. Now we can try listing again:
+Sure enough, we don't have any machines yet because we haven't provisioned. We can try listing again:
 
 ```
 $ engraver machines list --cluster-id dev
@@ -219,11 +240,11 @@ $ engraver machines list --cluster-id dev
 +--+----+---------+-----------------+------------+
 ```
 
-After we provision machines, you can check out `.engraver/clusters/dev.json` to see the full machine cache.
+After we provision, the `.engraver/clusters/dev.json` file will have lots of details about the machines that were brought up.
 
 #### Provisioning
 
-Time to provision our cluster in the cloud. Run the following command to spin up our 3-node cluster:
+Time to stand up our cluster in the cloud. Run the following command to spin up our 3-node cluster:
 
 ```
 $ engraver cluster provision --cluster-id dev
@@ -252,15 +273,93 @@ $ engraver machines list --cluster-id dev
 +---+------------+---------+-------------------------------------------+-------------+
 ```
 
+If you log into each machine, you'll notice that there's no `onyx` container running on the machine. The Onyx Ansible role did run as a part of provisioning, but didn't start it's container yet. Onyx is a *library*, and is therefore bundled as part of the user level application. The Onyx container will be started during the Application Deployment phase.
+
 #### Log Streaming
 
-With our cluster up and running, it'd be nice to know what the heck is going on! Engraver can automatically stream logs from Docker containers onto your nachine. Our machine profile asked for 3 machines to all run ZooKeeper, so let's take a look:
+Most of our cluster up and running, but it'd be nice to know what the heck is going on! Engraver can automatically stream logs from Docker containers onto your nachine. Our machine profile asked for 3 machines to all run ZooKeeper, so let's take a look:
 
 ```
 $ engraver logs ec2-52-90-230-216.compute-1.amazonaws.com --cluster-id dev --service zookeeper
 ```
 
-A stream of log contents will be played into your terminal. You can abort out of it using your OS-specific key combination. Note that log streaming will only work for services that declare a `container_name` var in the default values file of their Ansible playbook.
+Log contents will be streamed into your local terminal. You can abort out of it using your OS-specific key combination. Note that log streaming will only work for services that declare a `<service-name>_container_name` var in the default values file of their Ansible playbook.
+
+#### Application Deployment
+
+Everything is in place to deploy our Onyx application. We're going to deploy our app as a container using Docker and DockerHub. Make sure you're authenticated to DockerHub with:
+
+```
+$ docker login
+```
+
+Then deploy with:
+
+```
+$ engraver deploy --via dockerhub --cluster-id dev --tenancy-id message-processor --dockerhub-username <your username> --n-peers 4
+```
+
+This command uberjars your application, creates a container image, pushes it to DockerHub, then pulls it down onto any machines in your cluster that run the `onyx` service. It will starts `4` peers on each machine under the tenancy `message-processor`. This is going to take a while for the first time, so you might want to grab a cup of coffee. The Docker image for your application is uploading its base image, which includes Java, plus its own uberjar. After your first push and pull to/from DockerHub, the base image will be cached on both DockerHub and the machines on your cluster - drastically cutting down on upload/download time thereafter.
+
+Verify that Onyx is running by inspecting the logs:
+
+```
+$ engraver logs ec2-52-90-230-216.compute-1.amazonaws.com --cluster-id dev --service onyx
+```
+
+#### Job Submission
+
+The Onyx peers are running inside containers on each of the 3 machines our cluster, but they don't have any work to do yet. Now we're going to submit the job to fire them up:
+
+```
+$ engraver job submit --cluster-id dev --tenancy-id message-processor --job-name sample
+```
+
+This will submit the `sample` job to any Onyx peers in the cluster running under the `message-processor` tenancy id. You should see some activity in your logs that your job has begun.
+
+The job is running, but there's nothing writing data to the input stream. We'll do that by hand for this tutorial for ease of use by leveraging the Kafka console producer and consumer scripts:
+
+For the producer:
+
+```
+# SSH into a machine running Kafka
+$ ssh -i ~/.ssh/your-key.pem ubuntu@ec2-52-90-230-216.compute-1.amazonaws.com
+
+# Get a shell in the Kafka container
+$ docker exec -it kafka /bin/bash
+
+# Export JMX_PORT to avoid port collisions.
+# Sigh, I know. :/
+$ export JMX_PORT=10400
+
+$ bin/kafka-console-producer.sh --broker-list 127.0.0.1:9092 --topic input-stream
+```
+
+For the consumer:
+
+```
+$ ssh -i ~/.ssh/your-key.pem ubuntu@ec2-52-90-230-216.compute-1.amazonaws.com
+
+# Get a shell in the Kafka container
+$ docker exec -it kafka /bin/bash
+
+# Export JMX_PORT to avoid port collisions.
+# Sigh, I know. :/
+$ export JMX_PORT=10400
+
+# ZOOKEEPER_IP is available as an environment variable on this container
+$ bin/kafka-console-consumer.sh --zookeeper $ZOOKEEPER_IP --topic output-stream
+```
+
+In the console producer, fire off a few EDN messages:
+
+```
+{:message "Hello world"}
+{:message "Onyx is running!"}
+{:message "Here's a really long message to trigger a different code path"}
+```
+
+You should see messages stream into the console consumer as writing data through the console producer.
 
 #### Autoscaling
 
@@ -282,7 +381,7 @@ $ engraver machines describe --cluster-id dev
 +------------+----------+------------------------------------+---------------+
 ```
 
-Desired count is `1`. Let's make it happen by provisioning!
+The desired count is `1`, which updated our location specification. Let's make it real by running provisioning:
 
 ```
 $ engraver cluster provision --cluster-id dev
@@ -301,28 +400,6 @@ $ engraver machines list --cluster-id dev
 +---+------------+---------+-------------------------------------------+-------------+
 ```
 
-#### Application Deployment
-
-Everything is in place to deploy our application. We're going to deploy our application as a container using Docker and DockerHub. Make sure you're authenticated to DockerHub with:
-
-```
-$ docker login
-```
-
-Then deploy with:
-
-```
-$ engraver deploy --via dockerhub --cluster-id dev --tenancy-id message-processor --dockerhub-username <your username> --n-peers 4
-```
-
-The above command uberjars your application, creates a container image, pushes it to DockerHub, then pulls it down onto any machines in your cluster that run the "Onyx" service. It will starts `4` peers on each machine. This is going to take a while for the first time, so you might want to grab a cup of coffee. The Docker image for your application is uploading its base image, which includes Java, plus its own uberjar. After your first push and pull to/from DockerHub, the base image will be cached on both DockerHub and the machines on your cluster - drastically cutting down on upload/download time thereafter.
-
-#### Job Submission
-
-```
-$ engraver job submit --cluster-id dev --tenancy-id test --job-name message-processor
-```
-
 #### Teardown
 
 When you're down with this tutorial, you can tear everything down with:
@@ -331,9 +408,7 @@ When you're down with this tutorial, you can tear everything down with:
 $ engraver cluster teardown --cluster-id dev
 ```
 
-This will delete all EC2 instances in your VPC, then delete the VPC entirely.
-
-#### Generated Files
+This will delete all EC2 instances in your VPC, then delete the VPC entirely. Thanks for playing!
 
 ### License
 
