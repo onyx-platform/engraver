@@ -50,6 +50,12 @@ If you disagree with our set up of Ansible out of the box, that's fine. If you k
 
 This is a glossary for all the concepts that we use in Engraver. Each term is briefly explained. See other sections of the documentation for more in-depth discussion.
 
+Here's a quick visual:
+
+<p align="center">
+  <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
+</p>
+
 #### Clusters
 
 A cluster is a set of virtual machines that run inside an isolated network. Machines are constructed from machine profiles, and run services when they are active. A cluster is the highest level of deployment isolation in Engraver.
@@ -77,10 +83,6 @@ Engraver jobs refer to Onyx jobs. When we *submit* or *kill* a job, we are speci
 #### Ansible
 
 Engraver wraps the Python configuration management tool Ansible. Engraver is primarily reasonable for generating Ansible files in the background while commands are executed. Engraver interprets user commands and maps them to Ansible Yaml files. When a change is ready to be made to a cluster, Engraver turns around and invokes Ansible under the hood. Engraver allows full access to Ansible for users who know what they're doing and want a little more power.
-
-<p align="center">
-  <img width="70%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/concepts.svg">
-</p>
 
 ### How it Works
 
