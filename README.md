@@ -145,14 +145,18 @@ This forces the ZooKeeper and BookKeeper services to be provisioned before Onyx 
 
 ### FAQ
 
-Q: How do I run my own provisioning playbook?
-A: Edit the `ansible/<cluster_id>_post.yml` file and create an Ansible playbook. This playbook will be invoked after running `ansible/<cluster_id>.yml` during the `engraver cluster provision` command.
+- Q: How do I run my own provisioning playbook?
+- A: Edit the `ansible/<cluster_id>_post.yml` file and create an Ansible playbook. This playbook will be invoked after running `ansible/<cluster_id>.yml` during the `engraver cluster provision` command.
 
 -----------------
 
-Q: How do I force services to be brought up in a particular order?
-A: Edit the `ansible/roles/<service>/defaults/main.yml` file and add a `service_dependencies` key, with value of an array of service names. The services for a profile will be brought up in a topologically sorted order.
+- Q: How do I force services to be brought up in a particular order?
+- A: Edit the `ansible/roles/<service>/defaults/main.yml` file and add a `service_dependencies` key, with value of an array of service names. The services for a profile will be brought up in a topologically sorted order.
 
+-----------------
+
+- Q: How do I change a machine profile after I've provisioned it?
+- A: Create a new profile (`engraver machines new`), and remove the old one (`engraver machines remove`). Machine profiles are like cattle.
 
 ### Tutorial
 
