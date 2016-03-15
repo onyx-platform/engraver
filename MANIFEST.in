@@ -1,0 +1,3 @@
+include README.md
+include src/args.json
+include src/ansible_template/*

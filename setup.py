@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='engraver',
-    version='0.1.0',
+    version='0.1.3',
     description='A tool for cutting Onyx',
     long_description=long_description,
     url='https://github.com/onyx-platform/engraver',
@@ -18,6 +18,7 @@ setup(
     author_email='support@onyxplatform.org',
     license='Eclipse',
     install_requires=['boto', 'mako', 'prettytable', 'toposort'],
+    packages=['src'],
     package_data={
         'src': ['src/args.json', 'src/ansible_template/*'],
     },
