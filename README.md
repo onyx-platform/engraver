@@ -36,11 +36,13 @@ To run Engraver, you will need:
 
 ### Summary
 
-Engraver is a tool for managing Onyx cluster infrastructure. Unlike other platforms such as Spark and Hadoop, Onyx does not embed a means for application deployment. The design decision to omit deployment is intentional since it lets application authors choose how and when to deploy application code instead of being forced to opt into a predetermined strategy.
+Engraver is a tool for managing Onyx cluster infrastructure. Unlike other platforms such as Spark and Hadoop, Onyx does not embed a feature for application deployment. The design decision to omit deployment is intentional since it lets application authors choose how and when to deploy application code instead of being forced to opt into a predetermined strategy.
 
 There is a fair amount of overlap, however, between the deployment techniques for many teams that run Onyx in clustered, production environments. Engraver is a tool that unifies deployment code and makes a handful of opinionated decisions for the sake of making it easier to run Onyx in the cloud. Engraver itself is a Python based tool that wraps Ansible. We designed Engraver to make it friendly for getting started on using Onyx without knowing Ansible, but you're encouraged to learn Ansible along the way to make your Onyx deployment customized to your needs.
 
-If you disagree with our set up of Ansible out of the box, that's fine. If you know enough about configuration management to take issue with the set up, you're in the category of developers that's advanced enough to not need Engraver. For everyone else, we've built Engraver to be a springboard into production, and can be used for serious deployments.
+If you disagree with our set up of Ansible out of the box, that's fine. If you know enough about configuration management to take issue with the set up, you're in the category of developers that's advanced enough to not need Engraver. For everyone else, we've built Engraver to be a springboard into production, and as something that can be used for serious deployments.
+
+Engraver has a small set of commands that are built to guide your engineering from initial design all the way into production:
 
 <p align="center">
   <img width="60%" src="https://rawgit.com/onyx-platform/engraver/master/doc/images/lifecycle.svg">
@@ -85,6 +87,30 @@ Engraver jobs refer to Onyx jobs. When we *submit* or *kill* a job, we are speci
 Engraver wraps the Python configuration management tool Ansible. Engraver is primarily reasonable for generating Ansible files in the background while commands are executed. Engraver interprets user commands and maps them to Ansible Yaml files. When a change is ready to be made to a cluster, Engraver turns around and invokes Ansible under the hood. Engraver allows full access to Ansible for users who know what they're doing and want a little more power.
 
 ### How it Works
+
+Engraver is a wrapper around Ansible. Ansible is a terrific tool for deploying virtual machines into the cloud and provisioning them to run user applications. There is, however, a fair amount of work that remains for development teams that cannot be quickly solved by Ansible alone - such as locking down security, attaching persistent volumes, and configuring clustered services for high availability. Engraver aims to solve common dev-ops tasks, and Ansible's YAML-based protocol is a hand-in-glove fit.
+
+We aim to automatically generate *as few files as possible*, thus minimizing the number of collisions that can happen as a result of checking files into version control across teams.
+
+#### Generated Files
+
+The following files are automatically generated, and should not be manually edited:
+
+- `ansible/<cluster_id>.yml`
+- `ansible/deployment.yml`
+- `ansible/cluster_remove.yml`
+- `ansible/machine_remove.yml`
+- `ansible/job_submit.yml`
+- `ansible/job_kill.yml`
+- `.engraver/clusters/*`
+
+The following files are automatically generated, and *may* be edited by hand:
+
+- `ansible/<cluster_id>_post.yml`
+- `ansible/group_vars/<cluster_id>.yml`
+- `ansible/vars/cluster_vars/test/machine_profiles/<profile_id>.yml`
+
+When commands are invoked, Engraver scans the generated files and builds up an in-memory representation for the specification of your cluster. The files are, in turn, passed to Ansible to create the desired cluster.
 
 ### Machine Profiles In-Depth
 
