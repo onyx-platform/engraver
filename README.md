@@ -143,6 +143,17 @@ service_dependencies:
 
 This forces the ZooKeeper and BookKeeper services to be provisioned before Onyx is provisioned on a machine.
 
+### FAQ
+
+Q: How do I run my own provisioning playbook?
+A: Edit the `ansible/<cluster_id>_post.yml` file and create an Ansible playbook. This playbook will be invoked after running `ansible/<cluster_id>.yml` during the `engraver cluster provision` command.
+
+-----------------
+
+Q: How do I force services to be brought up in a particular order?
+A: Edit the `ansible/roles/<service>/defaults/main.yml` file and add a `service_dependencies` key, with value of an array of service names. The services for a profile will be brought up in a topologically sorted order.
+
+
 ### Tutorial
 
 This a short guide that explains each major piece of Engraver by walking through an example.
