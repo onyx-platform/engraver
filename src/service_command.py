@@ -24,6 +24,7 @@ def service_pull(arg_vars, project_root):
   print_ok_pending("Invoking Git. Streaming its output")
   role = util.service_path(project_root, arg_vars['service-name'])
   call(["git", "clone", arg_vars['service-repo'], role])
+  call(["rm", "-rf", role + "/.git"])
   print_ok("Installed service to " + role)
 
 def service_describe(arg_vars, project_root):
