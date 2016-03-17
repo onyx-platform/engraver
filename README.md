@@ -84,7 +84,7 @@ Engraver jobs refer to Onyx jobs. When we *submit* or *kill* a job, we are speci
 
 #### Ansible
 
-Engraver wraps the Python configuration management tool Ansible. Engraver is primarily reasonable for generating Ansible files in the background while commands are executed. Engraver interprets user commands and maps them to Ansible Yaml files. When a change is ready to be made to a cluster, Engraver turns around and invokes Ansible under the hood. Engraver allows full access to Ansible for users who know what they're doing and want a little more power.
+Engraver wraps the Python configuration management tool Ansible. Engraver is primarily reasonable for generating Ansible files in the background while commands are executed. Engraver interprets user commands and maps them to Ansible Yaml files. When a change is ready to be made to a cluster, Engraver turns around and invokes Ansible under the hood. Engraver allows full access to Ansible for users who know what they're doing and want a little more power. You can even pass arguments directly to Ansible for commands that support it with the `--ansible` switch.
 
 ### How it Works
 
@@ -293,7 +293,7 @@ Time to stand up our cluster in the cloud. Run the following command to spin up 
 $ engraver cluster provision --cluster-id dev
 ```
 
-You'll see a fair amount of Ansible output. When you provision in AWS, Ansible will:
+You'll see a fair amount of Ansible output. If you run into any unexpected problems, you can add `--ansible='-vvvv'` to the end of that line - which will put Ansible into verbose mode. When you provision in AWS, Ansible will:
 
 - Create a Virtual Private Cloud (VPC)
 - Create EC2 instances as describe by each of your machine profiles
