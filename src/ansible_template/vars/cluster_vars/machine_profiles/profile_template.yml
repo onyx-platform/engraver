@@ -1,8 +1,10 @@
 profile_id: ${ profile_id }
-ec2_image_id: ami-d05e75b8
+ec2_image_id: ${ ami }
 ec2_instance_type: ${ size }
 n_machine_instances: ${ n_instances }
+% if len(services) > 0:
 machine_services:
 % for s in services:
   - ${ s }
 % endfor
+% endif

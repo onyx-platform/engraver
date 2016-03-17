@@ -14,6 +14,7 @@ from subprocess import call
 from colors import bcolors, print_ok, print_done, print_fail, print_ok_pending
 from util import verify_cluster_exists, verify_profile_exists
 from ansible import invoke_ansible, refresh_provisioning_playbook
+from aws import default_amis
 
 def machines_describe(arg_vars, project_root):
   cluster_id = arg_vars['cluster_id']
@@ -29,7 +30,7 @@ def machines_describe(arg_vars, project_root):
         content = yaml.load(stream)
         t.add_row([content['profile_id'],
                    content['ec2_instance_type'],
-                   ", ".join(content['machine_services']),
+                   ", ".join(content.get('machine_services', [])),
                    content['n_machine_instances']])
     print t
   else:
@@ -115,13 +116,22 @@ def machines_new(arg_vars, project_root):
   cluster_id = arg_vars['cluster_id']
   profile_id = arg_vars['profile_id']
   tpl = util.profile_template()
-  path = util.machine_profile_id(project_root, cluster_id, profile_id)
+  path = util.machine_profile_file(project_root, cluster_id, profile_id)
+
+  cf = util.cluster_file(project_root, cluster_id)
+  contents = yaml.load(open(cf, 'r').read())
+  region = contents['aws_region']
+  ami = default_amis[region]
 
   with open(path, "w") as handle:
-    services = [x.strip() for x in arg_vars['services'].split(",")]
+    if (arg_vars.get('services')):
+      services = [x.strip() for x in arg_vars.get('services').split(",")]
+    else:
+      services = []
     handle.write(tpl.render(profile_id = arg_vars['profile_id'],
                             n_instances = arg_vars['n'],
                             size = arg_vars['size'],
+                            ami = ami,
                             services = services))
 
   refresh_provisioning_playbook(arg_vars, project_root)

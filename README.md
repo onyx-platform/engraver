@@ -199,7 +199,7 @@ $ engraver cluster describe
 +--------------+----------------+-----------+-------------------+
 | Cluster Name | Cloud Provider | Region    | Availability Zone |
 +--------------+----------------+-----------+-------------------+
-| dev          | AWS            | us-east-1 | us-east-1b        |
+| dev          | AWS            | us-east-1 | us-east-1a        |
 +--------------+----------------+-----------+-------------------+
 ```
 

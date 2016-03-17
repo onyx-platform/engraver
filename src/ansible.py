@@ -58,7 +58,7 @@ def refresh_provisioning_playbook(arg_vars, project_root):
     with open((path + "/"  + f), "r") as handle:
       content = yaml.load(handle)
       profiles.append(content['profile_id'])
-      for s in content['machine_services']:
+      for s in content.get('machine_services', []):
         rets = services.get(s, [])
         rets.append(content['profile_id'])
         services[s] = rets
@@ -85,7 +85,7 @@ def collect_onyx_profiles(project_root, arg_vars):
   for f in profile_files:
     with open((path + "/"  + f), "r") as handle:
       content = yaml.load(handle)
-      if 'onyx' in content['machine_services']:
+      if 'onyx' in content.get('machine_services', []):
         profiles.append(content['profile_id'])
 
   return profiles

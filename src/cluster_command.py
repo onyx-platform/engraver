@@ -9,6 +9,7 @@ from os.path import isfile, join
 from os import listdir, walk
 from subprocess import call
 from colors import bcolors, print_ok_pending, print_ok, print_fail, print_done
+from aws import default_amis, default_azs
 
 from machines_command import machines_teardown
 from ansible import invoke_ansible, refresh_provisioning_playbook
@@ -21,16 +22,19 @@ def cluster_new(arg_vars, project_root):
 
   tpl = util.default_profile_template()
   f = util.machine_profile_file(project_root, cluster_id, "default")
+  region = arg_vars.get('aws_region', 'us-east-1')
+  ami = default_amis[region]
+  az = arg_vars.get('aws_az') or default_azs[region]
 
   with open(f, "w") as handle:
-    handle.write(tpl.render())
+    handle.write(tpl.render(ami = ami))
 
   tpl = util.common_cluster_template()
   f = util.cluster_file(project_root, cluster_id)
   with open(f, "w") as text_file:
     text_file.write(tpl.render(cluster_id = cluster_id,
-                               aws_region = arg_vars['aws_region'],
-                               aws_az = arg_vars['aws_az']))
+                               aws_region = region,
+                               aws_az = az))
 
   refresh_provisioning_playbook(arg_vars, project_root)
 
