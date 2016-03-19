@@ -84,7 +84,7 @@ Engraver jobs refer to Onyx jobs. When we *submit* or *kill* a job, we are speci
 
 #### Ansible
 
-Engraver wraps the Python configuration management tool Ansible. Engraver is primarily reasonable for generating Ansible files in the background while commands are executed. Engraver interprets user commands and maps them to Ansible Yaml files. When a change is ready to be made to a cluster, Engraver turns around and invokes Ansible under the hood. Engraver allows full access to Ansible for users who know what they're doing and want a little more power. You can even pass arguments directly to Ansible for commands that support it with the `--ansible` switch.
+Engraver wraps the Python configuration management tool Ansible. Engraver is primarily responsible for generating Ansible files in the background while commands are executed. Engraver interprets user commands and maps them to Ansible YAML files. When a change is ready to be made to a cluster, Engraver turns around and invokes Ansible under the hood. Engraver allows full access to Ansible for users who know what they're doing and want a little more power. You can even pass arguments directly to Ansible for commands that support it with the `--ansible` switch.
 
 ### How it Works
 
@@ -182,11 +182,11 @@ Before we *really* get rolling, you'll need to tell Engraver about yourself. In 
 $ engraver configure aws
 ```
 
-Fill out the prompts to authenticate yourself with AWS. For the "remote user" prompt, use "ubuntu". This is the user that we'll use for SSH connectivity on our cluster. By default, the machines in an Engraver cluster run an Ubuntu Linux Distro.
+Fill out the prompts to authenticate yourself with AWS. For the "ssh remote user" prompt, use "ubuntu". This is the user that we'll use for SSH connectivity on our cluster. By default, the machines in an Engraver cluster run an Ubuntu Linux Distro.
 
 #### Cluster Management
 
-Once you `cd` into the `hello-world` directory and get comfortable with the Onyx project, you can create a specification for a new cluster. Engrave lets you have as many clusters as you want. Let's make a cluster called `dev` in AWS:
+Once you `cd` into the `hello-world` directory and get comfortable with the Onyx project, you can create a specification for a new cluster. Engraver lets you have as many clusters as you want. Let's make a cluster called `dev` in AWS:
 
 ```
 $ engraver cluster new --provider aws --cluster-id dev
@@ -391,7 +391,7 @@ $ docker exec -it kafka /bin/bash
 $ export JMX_PORT=10400
 
 # ZOOKEEPER_IP is available as an environment variable on this container
-$ bin/kafka-console-consumer.sh --zookeeper $ZOOKEEPER_IP --topic output-stream
+$ bin/kafka-console-consumer.sh --zookeeper $ZOOKEEPER_IP --topic input-stream
 ```
 
 In the console producer, fire off a few EDN messages:
