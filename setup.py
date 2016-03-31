@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='engraver',
-    version='0.1.5',
+    version='0.1.6',
     description='A tool for cutting Onyx',
     long_description=long_description,
     url='https://github.com/onyx-platform/engraver',
