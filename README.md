@@ -1,5 +1,7 @@
 # Engraver
 
+**Inactive project**: We've discontinued support for Engraver in favor of using tools like Kubernetes directly.
+
 Engraver is command-line tool for managing and deploying Onyx clusters.
 
 ### What does it offer?
