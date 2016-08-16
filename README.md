@@ -292,7 +292,7 @@ After we provision, the `.engraver/clusters/dev.json` file will have lots of det
 Time to stand up our cluster in the cloud. Run the following command to spin up our 3-node cluster:
 
 ```
-$ engraver cluster provision --cluster-id dev
+$ sudo engraver cluster provision --cluster-id dev
 ```
 
 You'll see a fair amount of Ansible output. If you run into any unexpected problems, you can add `--ansible='-vvvv'` to the end of that line - which will put Ansible into verbose mode. When you provision in AWS, Ansible will:
